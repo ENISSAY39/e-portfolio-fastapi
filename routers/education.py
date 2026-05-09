@@ -12,7 +12,7 @@ from schemas.User import User
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
- 
+
 # FORM CREATE
 @router.get("/profil/education", response_class=HTMLResponse)
 def show_form(request: Request):
@@ -112,7 +112,7 @@ def edit_education_form(
     return templates.TemplateResponse(
         request,
         "education.html",
-        {"request": request, "edu": edu},
+        {"request": request, "edu": edu, "mail": mail},
     )
 
 
