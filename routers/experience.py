@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from datetime import datetime
 
 from core.database_2 import get_session
+from core.security import decode_access_token
 from schemas.Experiences import Experience
 from schemas.User import User
 
@@ -14,7 +15,14 @@ templates = Jinja2Templates(directory="templates")
 
 # Form CREATE
 @router.get("/profil/experience", response_class=HTMLResponse)
-def show_experience_form(request: Request, mail: str):
+def show_experience_form(request: Request):
+    token = request.cookies.get("access_token")
+    payload = decode_access_token(token)
+    if not payload:
+        return RedirectResponse("/login", status_code=303)
+
+    mail = payload.get("sub")
+
     return templates.TemplateResponse(
         request,
         "experience.html",
@@ -26,7 +34,6 @@ def show_experience_form(request: Request, mail: str):
 @router.post("/profil/experience")
 def create_experience(
     request: Request,
-    mail: str,
     title: str = Form(...),
     date_start: str = Form(...),
     date_end: str = Form(...),
@@ -34,6 +41,12 @@ def create_experience(
     company: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    token = request.cookies.get("access_token")
+    payload = decode_access_token(token)
+    if not payload:
+        return RedirectResponse("/login", status_code=303)
+
+    mail = payload.get("sub")
     user = session.exec(select(User).where(User.mail == mail)).first()
 
     if not user:
@@ -51,16 +64,22 @@ def create_experience(
     session.add(experience)
     session.commit()
 
-    return RedirectResponse(f"/profil?mail={mail}", status_code=303)
+    return RedirectResponse("/profil", status_code=303)
 
 
 # DELETE
 @router.post("/profil/experience/delete/{exp_id}")
 def delete_experience(
+    request: Request,
     exp_id: int,
-    mail: str,
     session: Session = Depends(get_session),
 ):
+    token = request.cookies.get("access_token")
+    payload = decode_access_token(token)
+    if not payload:
+        return RedirectResponse("/login", status_code=303)
+
+    mail = payload.get("sub")
     user = session.exec(select(User).where(User.mail == mail)).first()
 
     exp = session.get(Experience, exp_id)
@@ -69,7 +88,7 @@ def delete_experience(
         session.delete(exp)
         session.commit()
 
-    return RedirectResponse(f"/profil?mail={mail}", status_code=303)
+    return RedirectResponse("/profil", status_code=303)
 
 
 # EDIT FORM
@@ -77,27 +96,32 @@ def delete_experience(
 def edit_experience_form(
     request: Request,
     exp_id: int,
-    mail: str,
     session: Session = Depends(get_session),
 ):
+    token = request.cookies.get("access_token")
+    payload = decode_access_token(token)
+    if not payload:
+        return RedirectResponse("/login", status_code=303)
+
+    mail = payload.get("sub")
     user = session.exec(select(User).where(User.mail == mail)).first()
     exp = session.get(Experience, exp_id)
 
     if not exp or not user or exp.user_id != user.id:
-        return RedirectResponse(f"/profil?mail={mail}", status_code=303)
+        return RedirectResponse("/profil", status_code=303)
 
     return templates.TemplateResponse(
         request,
         "experience.html",
-        {"request": request, "exp": exp, "mail": mail},
+        {"request": request, "exp": exp},
     )
 
 
 # UPDATE
 @router.post("/profil/experience/edit/{exp_id}")
 def update_experience(
+    request: Request,
     exp_id: int,
-    mail: str,
     title: str = Form(...),
     date_start: str = Form(...),
     date_end: str = Form(...),
@@ -105,6 +129,12 @@ def update_experience(
     company: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    token = request.cookies.get("access_token")
+    payload = decode_access_token(token)
+    if not payload:
+        return RedirectResponse("/login", status_code=303)
+
+    mail = payload.get("sub")
     user = session.exec(select(User).where(User.mail == mail)).first()
     exp = session.get(Experience, exp_id)
 
@@ -117,4 +147,4 @@ def update_experience(
 
         session.commit()
 
-    return RedirectResponse(f"/profil?mail={mail}", status_code=303)
+    return RedirectResponse("/profil", status_code=303)

@@ -44,13 +44,12 @@
                 <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
 
                     <!-- Modifier -->
-                    <a href="/profil/experience/edit/{{ exp.id }}?mail={{ mail }}">
+                    <a href="/profil/experience/edit/{{ exp.id }}">
                         <button type="button">Modifier</button>
                     </a>
 
                     <!-- Supprimer -->
-                    <form action="/profil/experience/delete/{{ exp.id }}?mail={{ mail }}" method="post"
-                        style="margin: 0;">
+                    <form action="/profil/experience/delete/{{ exp.id }}" method="post" style="margin: 0;">
                         <button type="submit" style="background-color: #dc3545;">Supprimer</button>
                     </form>
 
@@ -64,7 +63,7 @@
         <hr>
 
         <!-- Ajouter -->
-        <a href="/profil/experience?mail={{ mail }}">
+        <a href="/profil/experience">
             <button type="button">Ajouter une expérience</button>
         </a>
 
@@ -83,13 +82,12 @@
                 <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
 
                     <!-- Modifier -->
-                    <a href="/profil/education/edit/{{ edu.id }}?mail={{ mail }}">
+                    <a href="/profil/education/edit/{{ edu.id }}">
                         <button type="button">Modifier</button>
                     </a>
 
                     <!-- Supprimer -->
-                    <form action="/profil/education/delete/{{ edu.id }}?mail={{ mail }}" method="post"
-                        style="margin: 0;">
+                    <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
                         <button type="submit" style="background-color: #dc3545;">Supprimer</button>
                     </form>
 
@@ -101,7 +99,7 @@
         </ul>
 
         <!-- Ajouter -->
-        <a href="/profil/education?mail={{ mail }}">
+        <a href="/profil/education">
             <button type="button">Ajouter une éducation</button>
         </a>
 

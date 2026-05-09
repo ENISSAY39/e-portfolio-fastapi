@@ -19,8 +19,7 @@
             {% endif %}
         </h1>
 
-        <form
-            action="{% if edu %}/profil/education/edit/{{ edu.id }}?mail={{ mail }}{% else %}/profil/education?mail={{ mail }}{% endif %}"
+        <form action="{% if edu %}/profil/education/edit/{{ edu.id }}{% else %}/profil/education{% endif %}"
             method="post">
 
 
@@ -50,7 +49,7 @@
 
         <br>
 
-        <a href="/profil?mail={{ mail }}">
+        <a href="/profil">
             <button type="button">Retour</button>
         </a>
 

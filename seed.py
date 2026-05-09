@@ -5,6 +5,8 @@ from schemas.Experiences import Experience
 from schemas.Education import Education
 from datetime import datetime
 
+from core.security import hash_password
+
 
 def seed():
     with Session(engine) as session:
@@ -22,7 +24,7 @@ def seed():
                 age=20 + i,
                 mail=f"user{i}@mail.com",
                 phone=f"06000000{i:02}",
-                password="test"
+                hashed_password=hash_password("test")
             )
 
             session.add(user)
