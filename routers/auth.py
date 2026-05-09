@@ -53,9 +53,12 @@ def login_user(
     )
 
     response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
+    key="access_token",
+    value=token,
+    httponly=True,
+    samesite="lax",
+    secure=False,
+    path="/",
     )
 
     return response
@@ -65,5 +68,8 @@ def login_user(
 @router.get("/logout")
 def logout():
     response = RedirectResponse("/", status_code=303)
-    response.delete_cookie("access_token")
+    response.delete_cookie(
+    key="access_token",
+    path="/",
+    )
     return response
