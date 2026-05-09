@@ -37,9 +37,7 @@ def login_user(
     password: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    user = session.exec(
-        select(User).where(User.mail == mail)
-    ).first()
+    user = session.exec(select(User).where(User.mail == mail)).first()
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -47,11 +45,7 @@ def login_user(
     if not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_access_token(
-        data={
-            "sub": user.mail
-        }
-    )
+    token = create_access_token(data={"sub": user.mail})
 
     response = RedirectResponse(
         url="/profil",
@@ -70,11 +64,6 @@ def login_user(
 # Logout
 @router.get("/logout")
 def logout():
-    response = RedirectResponse(
-        url="/",
-        status_code=303,
-    )
-
+    response = RedirectResponse("/", status_code=303)
     response.delete_cookie("access_token")
-
     return response
