@@ -108,7 +108,7 @@ def show_profile(
         select(Education).where(Education.user_id == user.id)
     ).all()
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request,
         "profil.html",
         {
@@ -123,3 +123,9 @@ def show_profile(
         },
     )
 
+    # Prevent browser cache after logout
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+    return response
