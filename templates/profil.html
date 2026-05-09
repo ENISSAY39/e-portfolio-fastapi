@@ -13,7 +13,7 @@
 
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h1>Bienvenue {{ name }}</h1>
+            <h1>Bienvenue {{ first_name }} {{ name }}</h1>
 
             <form action="/logout" method="get">
                 <button type="submit">Logout</button>
@@ -22,7 +22,8 @@
 
         <!-- Infos utilisateur -->
         <div>
-            <p><strong>Nom / Prénom :</strong> {{ name }}</p>
+            <p><strong>Nom :</strong> {{ name }}</p>
+            <p><strong>Prénom :</strong> {{ first_name }}</p>
             <p><strong>Âge :</strong> {{ age }}</p>
             <p><strong>Email :</strong> {{ mail }}</p>
             <p><strong>Téléphone :</strong> {{ phone }}</p>
