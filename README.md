@@ -18,6 +18,9 @@ It allows users to:
 - manage their personal profile
 - add, edit, and delete professional experiences
 - add, edit, and delete education entries
+- public portfolio pages accessible to everyone
+- a public homepage listing e-portfolios
+- portfolio search functionality
 
 ---
 
@@ -34,6 +37,12 @@ It allows users to:
 ---
 
 ## Features
+
+### Public Portfolio System
+- Public e-portfolio pages
+- Public homepage listing users
+- Portfolio search system
+- Public/private route separation
 
 ### Authentication & Security
 - Secure login/logout system
@@ -68,6 +77,15 @@ It allows users to:
 - Users cannot edit another user's data
 
 ---
+
+## Main Routes
+
+| Route | Description |
+|---|---|
+| `/` | Public homepage |
+| `/login` | Login page |
+| `/profil` | Private user dashboard |
+| `/portfolio/{id}` | Public portfolio page |
 
 ## Database Design
 
