@@ -5,65 +5,58 @@
     <meta charset="UTF-8">
     <title>Portfolio</title>
     <link rel="stylesheet" href="{{ url_for('static', path='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='public_profile.css') }}">
 </head>
 
 <body>
+    <!-- HEADER -->
 
-    <div class="container">
+    <div class="header">
+        <h1>Welcome to Public e-Portfolios</h1>
+        <div class="header-buttons">
+            <a href="/">
+                <button type="button">Home</button>
+            </a>
+        </div>
+    </div>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>{{ user.first_name }} {{ user.name }}</h1>
+            <div class="profile-contact">
+                <div><strong>Email :</strong> {{ user.mail }}</div>
+                <div><strong>Téléphone :</strong> {{ user.phone }}</div>
+            </div>
+        </div>
 
-        <h1>
-            {{ user.first_name }} {{ user.name }}
-        </h1>
+        <div class="profile-section">
+            <h2>Experiences</h2>
+            <ul class="profile-list">
+                {% for exp in experiences %}
+                <li>
+                    <div><strong>{{ exp.title }}</strong> - {{ exp.company }}</div>
+                    <small>{{ exp.date_start }} → {{ exp.date_end }}</small>
+                    <div>{{ exp.description }}</div>
+                </li>
+                {% else %}
+                <li>No experiences.</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-        <p><strong>Email :</strong> {{ user.mail }}</p>
-        <p><strong>Téléphone :</strong> {{ user.phone }}</p>
-
-        <hr>
-
-        <h2>Experiences</h2>
-
-        <ul>
-            {% for exp in experiences %}
-            <li>
-                <strong>{{ exp.title }}</strong> - {{ exp.company }}<br>
-
-                <small>
-                    {{ exp.date_start }} → {{ exp.date_end }}
-                </small>
-
-                <br>
-
-                {{ exp.description }}
-            </li>
-
-            {% else %}
-            <li>No experiences.</li>
-            {% endfor %}
-        </ul>
-
-        <hr>
-
-        <h2>Educations</h2>
-
-        <ul>
-            {% for edu in educations %}
-            <li>
-                <strong>{{ edu.school_name }}</strong> - {{ edu.major }}<br>
-
-                <small>
-                    {{ edu.date_start }} → {{ edu.date_end }}
-                </small>
-
-                <br>
-
-                {{ edu.description }}
-            </li>
-
-            {% else %}
-            <li>No educations.</li>
-            {% endfor %}
-        </ul>
-
+        <div class="profile-section">
+            <h2>Educations</h2>
+            <ul class="profile-list">
+                {% for edu in educations %}
+                <li>
+                    <div><strong>{{ edu.school_name }}</strong> - {{ edu.major }}</div>
+                    <small>{{ edu.date_start }} → {{ edu.date_end }}</small>
+                    <div>{{ edu.description }}</div>
+                </li>
+                {% else %}
+                <li>No educations.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 
 </body>
