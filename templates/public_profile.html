@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='base.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>
+            {{ user.first_name }} {{ user.name }}
+        </h1>
+
+        <p><strong>Email :</strong> {{ user.mail }}</p>
+        <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+
+        <hr>
+
+        <h2>Experiences</h2>
+
+        <ul>
+            {% for exp in experiences %}
+            <li>
+                <strong>{{ exp.title }}</strong> - {{ exp.company }}<br>
+
+                <small>
+                    {{ exp.date_start }} → {{ exp.date_end }}
+                </small>
+
+                <br>
+
+                {{ exp.description }}
+            </li>
+
+            {% else %}
+            <li>No experiences.</li>
+            {% endfor %}
+        </ul>
+
+        <hr>
+
+        <h2>Educations</h2>
+
+        <ul>
+            {% for edu in educations %}
+            <li>
+                <strong>{{ edu.school_name }}</strong> - {{ edu.major }}<br>
+
+                <small>
+                    {{ edu.date_start }} → {{ edu.date_end }}
+                </small>
+
+                <br>
+
+                {{ edu.description }}
+            </li>
+
+            {% else %}
+            <li>No educations.</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+</body>
+
+</html>
