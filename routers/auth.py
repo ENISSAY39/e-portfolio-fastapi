@@ -10,14 +10,45 @@ from schemas.User import User
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+# home page
 
-# Login page
+
 @router.get("/", response_class=HTMLResponse)
-def login_page(request: Request):
+def home(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    users = session.exec(select(User).limit(10)).all()
+
     return templates.TemplateResponse(
         request,
-        "login.html",
-        {"request": request},
+        "home.html",
+        {
+            "request": request,
+            "users": users,
+        },
+    )
+
+
+# search
+
+
+@router.get("/search", response_class=HTMLResponse)
+def search_users(
+    request: Request,
+    query: str = "",
+    session: Session = Depends(get_session),
+):
+    users = session.exec(select(User).where(User.name.contains(query))).all()
+
+    return templates.TemplateResponse(
+        request,
+        "home.html",
+        {
+            "request": request,
+            "users": users,
+            "query": query,
+        },
     )
 
 
@@ -53,12 +84,12 @@ def login_user(
     )
 
     response.set_cookie(
-    key="access_token",
-    value=token,
-    httponly=True,
-    samesite="lax",
-    secure=False,
-    path="/",
+        key="access_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        path="/",
     )
 
     return response
@@ -69,7 +100,7 @@ def login_user(
 def logout():
     response = RedirectResponse("/", status_code=303)
     response.delete_cookie(
-    key="access_token",
-    path="/",
+        key="access_token",
+        path="/",
     )
     return response

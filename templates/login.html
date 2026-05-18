@@ -3,27 +3,43 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Connexion</title>
+    <title>Sign In</title>
     <link rel="stylesheet" href="{{ url_for('static', path='login.css') }}">
 </head>
 
 <body>
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>Welcome to Public e-Portfolios</h1>
+
+        <div class="header-buttons">
+
+            <a href="/">
+                <button type="button">Home</button>
+            </a>
+
+
+        </div>
+
+    </div>
 
     <h1 style="text-align:center;">Welcome to our e-portfolio website</h1>
 
     <div class="login-container">
-        <h2>Connexion</h2>
+        <h2>Sign In</h2>
 
         <form action="/login" method="post">
             <input type="email" name="mail" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Mot de passe" required>
+            <input type="password" name="password" placeholder="Password" required>
 
-            <button type="submit">Se connecter</button>
+            <button type="submit">Connect</button>
         </form>
 
         <div class="footer">
-            Pas encore de compte ?
-            <a href="/create_user">S'inscrire</a>
+            you don't have an account?
+            <a href="/create_user">Sign up</a>
         </div>
     </div>
 

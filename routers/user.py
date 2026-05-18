@@ -25,6 +25,38 @@ def calculate_age(birth_date: date) -> int:
     return age
 
 
+# profil public d'un utilisateur (affiché à tous les utilisateurs, même non connectés)
+@router.get("/portfolio/{user_id}", response_class=HTMLResponse)
+def public_portfolio(
+    request: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+):
+    user = session.get(User, user_id)
+
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
+    experiences = session.exec(
+        select(Experience).where(Experience.user_id == user.id)
+    ).all()
+
+    educations = session.exec(
+        select(Education).where(Education.user_id == user.id)
+    ).all()
+
+    return templates.TemplateResponse(
+        request,
+        "public_profile.html",
+        {
+            "request": request,
+            "user": user,
+            "experiences": experiences,
+            "educations": educations,
+        },
+    )
+
+
 # Form create user
 @router.get("/create_user", response_class=HTMLResponse)
 def show_form(request: Request):
@@ -62,7 +94,7 @@ def create_user(
     session.commit()
     session.refresh(user)
 
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse("/login", status_code=303)
 
 
 # Profil
@@ -76,27 +108,25 @@ def show_profile(
     token = request.cookies.get("access_token")
 
     if not token:
-        return RedirectResponse("/", status_code=303)
+        return RedirectResponse("/login", status_code=303)
 
     # Decode token
     payload = decode_access_token(token)
 
     if not payload:
-        return RedirectResponse("/", status_code=303)
+        return RedirectResponse("/login", status_code=303)
 
     # Get mail from token
     mail = payload.get("sub")
 
     if not mail:
-        return RedirectResponse("/", status_code=303)
+        return RedirectResponse("/login", status_code=303)
 
     # Get user
-    user = session.exec(
-        select(User).where(User.mail == mail)
-    ).first()
+    user = session.exec(select(User).where(User.mail == mail)).first()
 
     if not user:
-        return RedirectResponse("/", status_code=303)
+        return RedirectResponse("/login", status_code=303)
 
     # Get experiences
     experiences = session.exec(
