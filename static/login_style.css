@@ -1,0 +1,140 @@
+body {
+    margin: 0;
+    background-color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* HEADER */
+.header {
+    width: 100vw;
+    min-height: 180px;
+    box-sizing: border-box;
+    background-color: #2563eb;
+    padding: 50px 40px 60px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Pour couvrir toute la largeur de l'écran sans espace */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    transform: translateX(-50%);
+    color: white;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: white;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-buttons a button {
+    background-color: white;
+    color: #2563eb;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.header-buttons a button:hover {
+    opacity: 0.85;
+}
+
+/* MAIN TITLE */
+.main-title {
+    color: #2563eb;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    font-size: 48px;
+}
+
+/* LOGIN CARD */
+.login-container {
+    background-color: white;
+
+    padding: 24px;
+    border-radius: 16px;
+
+    width: 300px;
+
+    margin-top: 30px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-container h2 {
+    color: #2563eb;
+    margin-bottom: 30px;
+    font-size: 36px;
+}
+
+.login-container form {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.login-container input {
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    font-size: 16px;
+}
+
+.login-container button {
+    background-color: #2563eb;
+    color: white;
+
+    border: none;
+    padding: 14px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.login-container button:hover {
+    opacity: 0.9;
+}
+
+.footer {
+    margin-top: 161px;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
