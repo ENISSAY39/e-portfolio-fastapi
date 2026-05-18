@@ -12,8 +12,7 @@
             margin: 0;
             background-color: #e5e7eb;
             font-family: Arial, sans-serif;
-            /* Supprimer le padding autour du body pour que le header touche les bords */
-            padding: 0;
+
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,21 +20,15 @@
 
         /* HEADER */
         .header {
-            width: 100vw;
-            min-height: 180px;
+            width: 100%;
             box-sizing: border-box;
+
             background-color: #2563eb;
-            padding: 50px 40px 60px 40px;
+            padding: 30px 40px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* Pour couvrir toute la largeur de l'écran sans espace */
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            transform: translateX(-50%);
         }
 
         .header h1 {
