@@ -8,20 +8,40 @@
     <link rel="stylesheet" href="{{ url_for('static', path='base.css') }}">
 
     <style>
-        .header {
-            background-color: #2563eb;
-            padding: 18px 40px;
+        body {
+            margin: 0;
+            background-color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            /* Supprimer le padding autour du body pour que le header touche les bords */
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        /* HEADER */
+        .header {
+            width: 100vw;
+            min-height: 180px;
+            box-sizing: border-box;
+            background-color: #2563eb;
+            padding: 50px 40px 60px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-
-            color: white;
+            /* Pour couvrir toute la largeur de l'écran sans espace */
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            transform: translateX(-50%);
         }
 
         .header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 32px;
+            color: white;
         }
 
         .header-buttons {
@@ -34,10 +54,12 @@
             color: #2563eb;
 
             border: none;
-            padding: 10px 18px;
+            padding: 12px 20px;
 
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: bold;
+            font-size: 15px;
+
             cursor: pointer;
 
             transition: 0.2s;
@@ -47,12 +69,101 @@
             opacity: 0.85;
         }
 
+        /* SEARCH BAR */
+        .search-form {
+            margin-top: 40px;
+
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-form input {
+            width: 350px;
+
+            padding: 14px;
+
+            border: 1px solid #ccc;
+            border-radius: 10px;
+
+            font-size: 16px;
+        }
+
+        .search-form button {
+            background-color: #2563eb;
+            color: white;
+
+            border: none;
+            padding: 14px 22px;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .search-form button:hover {
+            opacity: 0.9;
+        }
+
+        /* CONTENT */
+        .container {
+            margin-top: 40px;
+
+            width: 70%;
+            max-width: 900px;
+        }
+
+        .container h3 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+        }
+
+        /* PORTFOLIO LIST */
         .portfolio-list {
-            margin-top: 30px;
+            list-style: none;
+            padding: 0;
         }
 
         .portfolio-list li {
+            background-color: white;
+
+            padding: 25px;
             margin-bottom: 20px;
+
+            border-radius: 14px;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .portfolio-list strong {
+            font-size: 22px;
+            color: #2563eb;
+        }
+
+        .portfolio-list a {
+            display: inline-block;
+
+            margin-top: 15px;
+
+            background-color: #2563eb;
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .portfolio-list a:hover {
+            opacity: 0.9;
         }
     </style>
 
@@ -60,9 +171,7 @@
 
 <body>
 
-
     <!-- HEADER -->
-
     <div class="header">
 
         <h1>Welcome to Public e-Portfolios</h1>
@@ -80,7 +189,9 @@
         </div>
 
     </div>
-    <form action="/search" method="get">
+
+    <!-- SEARCH -->
+    <form action="/search" method="get" class="search-form">
 
         <input type="text" name="query" placeholder="Search a portfolio..." value="{{ query if query else '' }}">
 
@@ -91,12 +202,11 @@
     </form>
 
     <!-- CONTENT -->
-
     <div class="container">
 
-
         <h3>
-            Here you can find the available portfolios. Click on "View portfolio" to see the content of each portfolio:
+            Here you can find the available portfolios.
+            Click on "View portfolio" to see each profile.
         </h3>
 
         <ul class="portfolio-list">
@@ -109,7 +219,7 @@
                     {{ user.name }}
                 </strong>
 
-                <br><br>
+                <br>
 
                 <a href="/portfolio/{{ user.id }}">
                     View portfolio
