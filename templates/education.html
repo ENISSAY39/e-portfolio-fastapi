@@ -13,9 +13,9 @@
 
         <h1>
             {% if edu %}
-            Modifier une éducation
+            Modify an education
             {% else %}
-            Ajouter une éducation
+            Add an education
             {% endif %}
         </h1>
 
@@ -23,26 +23,26 @@
             method="post">
 
 
-            <label>École :</label>
+            <label>School :</label>
             <input type="text" name="school_name" value="{{ edu.school_name if edu else '' }}" required>
 
 
-            <label>Date de début :</label>
+            <label>Start date :</label>
             <input type="date" name="date_start" value="{{ edu.date_start.strftime('%Y-%m-%d') if edu else '' }}"
                 required>
 
-            <label>Date de fin :</label>
+            <label>End date :</label>
             <input type="date" name="date_end" value="{{ edu.date_end.strftime('%Y-%m-%d') if edu else '' }}" required>
 
             <label>Description :</label>
             <textarea name="description" rows="3" required>{{ edu.description if edu else '' }}</textarea>
 
-            <label>Spécialité :</label>
+            <label>Major :</label>
             <input type="text" name="major" value="{{ edu.major if edu else '' }}" required>
 
 
             <button type="submit">
-                {% if edu %}Mettre à jour{% else %}Ajouter{% endif %}
+                {% if edu %}Update{% else %}Add{% endif %}
             </button>
 
         </form>
@@ -50,7 +50,7 @@
         <br>
 
         <a href="/profil">
-            <button type="button">Retour</button>
+            <button type="button">Back</button>
         </a>
 
     </div>

@@ -13,7 +13,7 @@
 
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h1>Bienvenue {{ first_name }} {{ name }}</h1>
+            <h1>Welcome {{ first_name }} {{ name }}</h1>
 
             <form action="/logout" method="get">
                 <button type="submit">Logout</button>
@@ -22,17 +22,17 @@
 
         <!-- Infos utilisateur -->
         <div>
-            <p><strong>Nom :</strong> {{ name }}</p>
-            <p><strong>Prénom :</strong> {{ first_name }}</p>
-            <p><strong>Âge :</strong> {{ age }}</p>
+            <p><strong>Name :</strong> {{ name }}</p>
+            <p><strong>First name :</strong> {{ first_name }}</p>
+            <p><strong>Age :</strong> {{ age }}</p>
             <p><strong>Email :</strong> {{ mail }}</p>
-            <p><strong>Téléphone :</strong> {{ phone }}</p>
+            <p><strong>Cell phone :</strong> {{ phone }}</p>
         </div>
 
         <hr>
 
         <!-- Expériences -->
-        <h2>Mes expériences</h2>
+        <h2>My Experiences</h2>
 
         <ul>
             {% for exp in experiences %}
@@ -57,7 +57,7 @@
                 </div>
             </li>
             {% else %}
-            <li>Aucune expérience pour le moment.</li>
+            <li>No experience available at the moment.</li>
             {% endfor %}
         </ul>
 
@@ -65,12 +65,12 @@
 
         <!-- Ajouter -->
         <a href="/profil/experience">
-            <button type="button">Ajouter une expérience</button>
+            <button type="button">Add an experience</button>
         </a>
 
         <!-- Education -->
         <hr>
-        <h2>Mes éducations</h2>
+        <h2>My Education</h2>
 
         <ul>
             {% for edu in educations %}
@@ -84,24 +84,24 @@
 
                     <!-- Modifier -->
                     <a href="/profil/education/edit/{{ edu.id }}">
-                        <button type="button">Modifier</button>
+                        <button type="button">Modify</button>
                     </a>
 
                     <!-- Supprimer -->
                     <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
-                        <button type="submit" style="background-color: #dc3545;">Supprimer</button>
+                        <button type="submit" style="background-color: #dc3545;">Delete</button>
                     </form>
 
                 </div>
             </li>
             {% else %}
-            <li>Aucune éducation pour le moment.</li>
+            <li>No education available at the moment.</li>
             {% endfor %}
         </ul>
 
         <!-- Ajouter -->
         <a href="/profil/education">
-            <button type="button">Ajouter une éducation</button>
+            <button type="button">Add an education</button>
         </a>
 
     </div>

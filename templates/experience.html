@@ -13,9 +13,9 @@
 
         <h1>
             {% if exp %}
-            Modifier une expérience
+            Modify an experience
             {% else %}
-            Ajouter une expérience
+            Add an experience
             {% endif %}
         </h1>
 
@@ -25,11 +25,11 @@
             <label>Titre :</label>
             <input type="text" name="title" value="{{ exp.title if exp else '' }}" required>
 
-            <label>Date de début :</label>
+            <label>Start date :</label>
             <input type="date" name="date_start" value="{{ exp.date_start.strftime('%Y-%m-%d') if exp else '' }}"
                 required>
 
-            <label>Date de fin :</label>
+            <label>End date :</label>
             <input type="date" name="date_end" value="{{ exp.date_end.strftime('%Y-%m-%d') if exp else '' }}" required>
 
             <label>Description :</label>
@@ -39,7 +39,7 @@
             <input type="text" name="company" value="{{ exp.company if exp else '' }}" required>
 
             <button type="submit">
-                {% if exp %}Mettre à jour{% else %}Ajouter{% endif %}
+                {% if exp %}Update{% else %}Add{% endif %}
             </button>
 
         </form>
@@ -47,7 +47,7 @@
         <br>
 
         <a href="/profil">
-            <button type="button">Retour</button>
+            <button type="button">Back</button>
         </a>
 
     </div>
