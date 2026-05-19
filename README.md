@@ -186,3 +186,44 @@ http://127.0.0.1:8000
 * Authentication is handled with JWT tokens stored in HTTP-only cookies
 * Passwords are securely hashed before storage
 
+---
+
+## Docker Containerization
+
+### 1. Build docker image 
+
+```bash
+docker build -t eportfolio-app .
+```
+
+### 2. Lancer le conteneur
+
+```bash
+docker run -p 8000:8000 eportfolio-app
+```
+
+### 3. Ou utiliser docker-compose
+
+```bash
+docker-compose up --build
+```
+
+L'application sera alors accessible sur :
+
+```
+http://localhost:8000
+```
+
+### 4. Arrêter les conteneurs
+
+```bash
+docker-compose down
+```
+
+---
+
+**Remarques :**
+- Le fichier `docker-compose.yml` monte le fichier `database.db` pour persister les données.
+- Le fichier `.dockerignore` exclut les fichiers/dossiers inutiles du build Docker.
+- Le port 8000 est exposé par défaut.
+

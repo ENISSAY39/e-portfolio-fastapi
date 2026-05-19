@@ -1,8 +1,9 @@
 from fastapi import FastAPI
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
+
 from fastapi.staticfiles import StaticFiles
 from core.database_2 import create_db_and_tables
-
-
 from routers import auth, user, experience, education
 from seed import seed
 
@@ -10,6 +11,7 @@ from seed import seed
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # Routers
 app.include_router(auth.router)
