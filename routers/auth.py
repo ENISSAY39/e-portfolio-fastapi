@@ -16,9 +16,28 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/", response_class=HTMLResponse)
 def home(
     request: Request,
+    page: int = 1,
     session: Session = Depends(get_session),
 ):
-    users = session.exec(select(User).limit(10)).all()
+    items_per_page = 10
+
+    # Ensure page is at least 1
+    if page < 1:
+        page = 1
+
+    # Get total count of users
+    total_users = len(session.exec(select(User)).all())
+    total_pages = (total_users + items_per_page - 1) // items_per_page
+
+    # Ensure page doesn't exceed total pages
+    if page > total_pages and total_pages > 0:
+        page = total_pages
+
+    # Calculate offset
+    offset = (page - 1) * items_per_page
+
+    # Get users for current page
+    users = session.exec(select(User).offset(offset).limit(items_per_page)).all()
 
     return templates.TemplateResponse(
         request,
@@ -26,6 +45,12 @@ def home(
         {
             "request": request,
             "users": users,
+            "current_page": page,
+            "total_pages": total_pages,
+            "has_previous": page > 1,
+            "has_next": page < total_pages,
+            "previous_page": page - 1,
+            "next_page": page + 1,
         },
     )
 
@@ -37,9 +62,35 @@ def home(
 def search_users(
     request: Request,
     query: str = "",
+    page: int = 1,
     session: Session = Depends(get_session),
 ):
-    users = session.exec(select(User).where(User.name.contains(query))).all()
+    items_per_page = 10
+
+    # Ensure page is at least 1
+    if page < 1:
+        page = 1
+
+    # Get total count of search results
+    total_users = len(session.exec(select(User).where(User.name.contains(query))).all())
+    total_pages = (
+        (total_users + items_per_page - 1) // items_per_page if total_users > 0 else 1
+    )
+
+    # Ensure page doesn't exceed total pages
+    if page > total_pages and total_pages > 0:
+        page = total_pages
+
+    # Calculate offset
+    offset = (page - 1) * items_per_page
+
+    # Get users for current page
+    users = session.exec(
+        select(User)
+        .where(User.name.contains(query))
+        .offset(offset)
+        .limit(items_per_page)
+    ).all()
 
     return templates.TemplateResponse(
         request,
@@ -48,6 +99,12 @@ def search_users(
             "request": request,
             "users": users,
             "query": query,
+            "current_page": page,
+            "total_pages": total_pages,
+            "has_previous": page > 1,
+            "has_next": page < total_pages,
+            "previous_page": page - 1,
+            "next_page": page + 1,
         },
     )
 
