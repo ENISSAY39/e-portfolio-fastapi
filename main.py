@@ -9,6 +9,7 @@ from seed import seed
 
 app = FastAPI()
 
+# mount static files for css 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Routers

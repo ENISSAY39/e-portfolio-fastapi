@@ -158,6 +158,53 @@
         .portfolio-list a:hover {
             opacity: 0.9;
         }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .pagination a,
+        .pagination button {
+            background-color: #2563eb;
+            color: white;
+
+            border: none;
+            padding: 12px 18px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .pagination a:hover,
+        .pagination button:hover {
+            opacity: 0.9;
+        }
+
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .pagination-info {
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 14px;
+        }
     </style>
 
 </head>
@@ -223,6 +270,35 @@
             {% endfor %}
 
         </ul>
+
+        <!-- PAGINATION -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            <!-- Previous button -->
+            {% if has_previous %}
+            <a
+                href="{% if query %}?query={{ query }}&page={{ previous_page }}{% else %}?page={{ previous_page }}{% endif %}">
+                Previous
+            </a>
+            {% else %}
+            <button disabled>Previous</button>
+            {% endif %}
+
+            <!-- Page info -->
+            <span class="pagination-info">
+                Page {{ current_page }} of {{ total_pages }}
+            </span>
+
+            <!-- Next button -->
+            {% if has_next %}
+            <a href="{% if query %}?query={{ query }}&page={{ next_page }}{% else %}?page={{ next_page }}{% endif %}">
+                Next
+            </a>
+            {% else %}
+            <button disabled>Next</button>
+            {% endif %}
+        </div>
+        {% endif %}
 
     </div>
 
