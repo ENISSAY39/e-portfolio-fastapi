@@ -1,0 +1,197 @@
+body {
+    margin: 0;
+    background-color: #e5e7eb;
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* HEADER */
+.header {
+    width: 100%;
+    box-sizing: border-box;
+
+    background-color: #2563eb;
+    padding: 30px 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: white;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-buttons a button {
+    background-color: white;
+    color: #2563eb;
+
+    border: none;
+    padding: 12px 20px;
+
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.header-buttons a button:hover {
+    opacity: 0.85;
+}
+
+/* SEARCH BAR */
+.search-form {
+    margin-top: 40px;
+
+    display: flex;
+    gap: 12px;
+}
+
+.search-form input {
+    width: 350px;
+
+    padding: 14px;
+
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+    font-size: 16px;
+}
+
+.search-form button {
+    background-color: #2563eb;
+    color: white;
+
+    border: none;
+    padding: 14px 22px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.search-form button:hover {
+    opacity: 0.9;
+}
+
+/* CONTENT */
+.container {
+    margin-top: 40px;
+
+    width: 70%;
+    max-width: 900px;
+}
+
+.container h3 {
+    color: #2563eb;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 24px;
+}
+
+/* PORTFOLIO LIST */
+.portfolio-list {
+    list-style: none;
+    padding: 0;
+}
+
+.portfolio-list li {
+    background-color: white;
+
+    padding: 25px;
+    margin-bottom: 20px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.portfolio-list strong {
+    font-size: 22px;
+    color: #2563eb;
+}
+
+.portfolio-list a {
+    display: inline-block;
+
+    margin-top: 15px;
+
+    background-color: #2563eb;
+    color: white;
+
+    padding: 10px 18px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.portfolio-list a:hover {
+    opacity: 0.9;
+}
+
+/* PAGINATION */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.pagination a,
+.pagination button {
+    background-color: #2563eb;
+    color: white;
+
+    border: none;
+    padding: 12px 18px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.pagination a:hover,
+.pagination button:hover {
+    opacity: 0.9;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination-info {
+    color: #2563eb;
+    font-weight: bold;
+    font-size: 14px;
+}
