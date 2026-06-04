@@ -27,8 +27,7 @@ def seed():
                 birth_date=birth_date,
                 mail=f"user{i}@mail.com",
                 phone=f"06000000{i:02}",
-                hashed_password=hash_password("test")
-
+                hashed_password=hash_password("test"),
             )
 
             session.add(user)
@@ -79,6 +78,8 @@ def reset_db():
     print("Database reset")
 
 
+"""
 if __name__ == "__main__":
     reset_db()
     seed()
+"""
