@@ -16,7 +16,7 @@ body {
 }
 
 .search-form input {
-    width: 350px !important;
+    width: 350px;
 }
 
 /* HEADER */
