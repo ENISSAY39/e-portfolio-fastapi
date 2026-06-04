@@ -15,6 +15,10 @@ body {
     align-items: center;
 }
 
+.search-form input {
+    width: 350px !important;
+}
+
 /* HEADER */
 .header {
     width: 100%;
