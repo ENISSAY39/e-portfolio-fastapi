@@ -1,3 +1,4 @@
+/* STYLES GLOBAUX GÉNÉRAUX */
 * {
     margin: 0;
     padding: 0;
@@ -6,15 +7,12 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #f4f6f8;
     color: #333;
-    padding: 40px;
 }
 
 /* TITRES */
 h1 {
-    text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 h2 {
@@ -22,18 +20,15 @@ h2 {
     margin-bottom: 10px;
 }
 
-.container {
-    max-width: 700px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+h3 {
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 /* TEXT */
 p {
     margin: 8px 0;
+    line-height: 1.6;
 }
 
 /* LISTES */
@@ -43,21 +38,7 @@ ul {
 }
 
 li {
-    margin-bottom: 18px;
-    padding: 16px 18px;
-    background: #f7faff;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    transition: box-shadow 0.2s, background 0.2s;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-li:hover {
-    background: #eaf2fb;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 10px;
 }
 
 /* FORM */
@@ -65,19 +46,22 @@ form {
     margin-top: 20px;
 }
 
-
-
-input,
-textarea {
+form input,
+form textarea {
     width: 100%;
     padding: 10px;
     margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-family: inherit;
 }
 
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
 
-/* Liens pour home.html */
+/* LIENS */
 a {
     color: #007BFF;
     text-decoration: none;
@@ -91,22 +75,6 @@ a:hover {
 }
 
 /* BUTTON */
-@media (max-width: 600px) {
-    .container {
-        padding: 16px 4px;
-    }
-
-    li {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 12px 8px;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-}
-
 button {
     padding: 10px 15px;
     border: none;
@@ -114,6 +82,8 @@ button {
     background: #007BFF;
     color: white;
     cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
 button:hover {
@@ -123,64 +93,6 @@ button:hover {
 /* HR */
 hr {
     margin: 25px 0;
-}
-
-button {
-    padding: 10px 15px;
-    border-radius: 5px;
     border: none;
-    background: #007BFF;
-    color: white;
-}
-
-button:hover {
-    background: #007BFF;
-}
-
-
-.header {
-    background-color: #2563eb;
-    padding: 18px 70px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    color: white;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 28px;
-}
-
-.header-buttons {
-    display: flex;
-    gap: 12px;
-}
-
-.header-buttons a button {
-    background-color: white;
-    color: #2563eb;
-
-    border: none;
-    padding: 10px 18px;
-
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-.header-buttons a button:hover {
-    opacity: 0.85;
-}
-
-.portfolio-list {
-    margin-top: 30px;
-}
-
-.portfolio-list li {
-    margin-bottom: 20px;
+    border-top: 1px solid #ddd;
 }
