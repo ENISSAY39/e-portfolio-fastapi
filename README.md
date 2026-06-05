@@ -1,4 +1,4 @@
-# Yassine Gharbi & Guillaume de Montgolfier — e-portfolio
+# Yassine Gharbi & Guillaume de Montgolfier — e-Portfolio
 
 ## Live Demo
 
@@ -10,167 +10,251 @@ https://k2vm-229.mde.epf.fr/
 
 ## Overview
 
-This project is a web application built with FastAPI to manage a personal e-portfolio.
+This project is a web application built with FastAPI that allows users to create and manage a personal e-portfolio.
 
-It allows users to:
-- create an account
-- securely log in
-- manage their personal profile
-- add, edit, and delete professional experiences
-- add, edit, and delete education entries
-- public portfolio pages accessible to everyone
-- a public homepage listing e-portfolios
-- portfolio search functionality
+The platform provides both public and private features:
+
+* User registration
+* Secure authentication
+* Personal profile management
+* Experience management
+* Education management
+* Public portfolio publication
+* Portfolio search system
+* Portfolio pagination system
+
+The application follows a classic web architecture with a FastAPI backend, Jinja2 templates for rendering, and SQLite for data persistence.
 
 ---
 
 ## Tech Stack
 
-- Language: Python
-- Framework: FastAPI
-- Database: SQLite (via SQLModel)
-- Authentication: JWT + HTTP-only cookies
-- Password hashing: pwdlib / Argon2
-- Templating: Jinja2
-- Frontend: HTML + CSS
+### Backend
+
+* Python 3.12
+* FastAPI
+* SQLModel
+* SQLite
+
+### Security
+
+* JWT Authentication
+* HTTP-only Cookies
+* Argon2 Password Hashing
+
+### Frontend
+
+* HTML
+* CSS
+* Jinja2 Templates
+
+### DevOps
+
+* Docker
+* Docker Compose
+* Git
+* Cron-based Continuous Deployment
 
 ---
 
 ## Features
 
-### Public Portfolio System
-- Public e-portfolio pages
-- Public homepage listing users
-- Portfolio search system
-- Public/private route separation
+### Public Features
+
+* Public homepage listing all available portfolios
+* Search portfolios by name
+* Pagination system
+* Public portfolio pages accessible without authentication
 
 ### Authentication & Security
-- Secure login/logout system
-- JWT authentication
-- HTTP-only authentication cookies
-- Password hashing using Argon2
-- Protected routes
-- User session invalidation after logout
 
-### User Features
-- User creation with database persistence
-- Dynamic profile page
-- Automatic age calculation from birth date
+* User registration
+* Secure login/logout
+* JWT-based authentication
+* HTTP-only authentication cookies
+* Password hashing using Argon2
+* Protected routes
+* Session invalidation after logout
 
-### CRUD Operations
-- Experiences
-  - Create
-  - Read
-  - Update
-  - Delete
+### Profile Management
 
-- Educations
-  - Create
-  - Read
-  - Update
-  - Delete
+* Personal profile page
+* Automatic age calculation from birth date
+* Display personal information
+
+### Experience Management
+
+* Create experiences
+* Read experiences
+* Update experiences
+* Delete experiences
+
+### Education Management
+
+* Create education entries
+* Read education entries
+* Update education entries
+* Delete education entries
 
 ### Multi-user Support
-- Each user has their own experiences and educations
-- Relational ownership system
-- Data isolation between users
-- Users cannot edit another user's data
+
+* Data ownership system
+* User isolation
+* Protected user resources
+* Users cannot modify another user's data
 
 ---
 
-## Main Routes
+## Application Routes
 
-| Route | Description |
-|---|---|
-| `/` | Public homepage |
-| `/login` | Login page |
-| `/profil` | Private user dashboard |
-| `/portfolio/{id}` | Public portfolio page |
+| Route             | Description       |
+| ----------------- | ----------------- |
+| `/`               | Public homepage   |
+| `/search`         | Portfolio search  |
+| `/login`          | Login page        |
+| `/create_user`    | User registration |
+| `/profil`         | Private dashboard |
+| `/portfolio/{id}` | Public portfolio  |
+
+---
 
 ## Database Design
 
-The application uses a relational database with SQLModel.
+The application uses a relational database implemented with SQLModel.
 
 ### User
-- id (PK)
-- name
-- first_name
-- birth_date
-- mail
-- phone
-- hashed_password
+
+| Field           | Type        |
+| --------------- | ----------- |
+| id              | Primary Key |
+| name            | String      |
+| first_name      | String      |
+| birth_date      | Date        |
+| mail            | String      |
+| phone           | String      |
+| hashed_password | String      |
 
 ### Experience
-- id (PK)
-- title
-- company
-- date_start
-- date_end
-- description
-- user_id (FK → User.id)
+
+| Field       | Type        |
+| ----------- | ----------- |
+| id          | Primary Key |
+| title       | String      |
+| company     | String      |
+| date_start  | Date        |
+| date_end    | Date        |
+| description | String      |
+| user_id     | Foreign Key |
 
 ### Education
-- id (PK)
-- school_name
-- major
-- date_start
-- date_end
-- description
-- user_id (FK → User.id)
+
+| Field       | Type        |
+| ----------- | ----------- |
+| id          | Primary Key |
+| school_name | String      |
+| major       | String      |
+| date_start  | Date        |
+| date_end    | Date        |
+| description | String      |
+| user_id     | Foreign Key |
 
 ---
 
 ## Relationships
 
-### User → Experience : 1 → N
-One user can own multiple experiences.
+### User → Experience (1:N)
 
-### User → Education : 1 → N
-One user can own multiple education entries.
+A user can own multiple professional experiences.
 
-This means:
-- each experience belongs to one user
-- each education entry belongs to one user
+### User → Education (1:N)
+
+A user can own multiple education entries.
+
+Relationship rules:
+
+* One experience belongs to one user.
+* One education entry belongs to one user.
+* Deleting a user removes access to their associated records.
 
 ---
 
 ## Project Structure
 
 ```text
-├── core/           # Database & security logic
-├── routers/        # FastAPI route handlers
-├── schemas/        # SQLModel database models
-├── templates/      # Jinja2 HTML templates
-├── static/         # CSS files
-├── seed.py         # Database seeding
-├── main.py         # Application entry point
-````
+.
+├── core/
+│   ├── database_2.py
+│   └── security.py
+│
+├── routers/
+│   ├── auth.py
+│   ├── profil.py
+│   └── public_portfolio.py
+│
+├── schemas/
+│   ├── User.py
+│   ├── Experience.py
+│   └── Education.py
+│
+├── static/
+│   ├── base.css
+│   ├── home.css
+│   ├── login_style.css
+│   ├── create_user.css
+│   └── public_profile.css
+│
+├── templates/
+│   ├── home.html
+│   ├── login.html
+│   ├── profil.html
+│   ├── experience.html
+│   ├── education.html
+│   └── public_profile.html
+│
+├── docker-compose.yml
+├── dockerfile
+├── requirements.txt
+├── seed.py
+└── main.py
+```
 
 ---
 
-## Setup
+## Local Installation
 
-### 1. Create a virtual environment
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd e-portfolio
+```
+
+### 2. Create a Virtual Environment
 
 ```bash
 python3 -m venv env
-source env/bin/activate   # Linux / Mac
-env\Scripts\activate      # Windows
+source env/bin/activate
 ```
 
-### 2. Install dependencies
+Windows:
+
+```bash
+env\Scripts\activate
+```
+
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run the application
+### 4. Start the Application
 
 ```bash
 fastapi dev
 ```
 
-Then open:
+Application available at:
 
 ```text
 http://127.0.0.1:8000
@@ -178,11 +262,88 @@ http://127.0.0.1:8000
 
 ---
 
+## Docker Deployment
+
+### Build Image
+
+```bash
+docker build -t e-portfolio .
+```
+
+### Start Container
+
+```bash
+docker compose up -d
+```
+
+### Rebuild Container
+
+```bash
+docker compose up -d --build
+```
+
+---
+
+## Automated Deployment
+
+The production environment uses an automated deployment strategy directly executed on the virtual machine.
+
+Every 2 minutes, a deployment script checks the `prod-vm` branch and automatically deploys any new version.
+
+### Deployment Script
+
+```bash
+#!/bin/bash
+
+echo "DEPLOY $(date)"
+
+cd /home/yassine/web_prog/e-portfolio || exit 1
+
+git pull origin prod-vm
+
+sudo docker compose up -d --build
+
+sudo docker image prune -f
+
+echo "DEPLOY DONE $(date)"
+```
+
+### Cron Configuration
+
+```cron
+*/2 * * * * /home/yassine/deploy.sh >> /home/yassine/deploy.log 2>&1
+```
+
+### Deployment Workflow
+
+1. Fetch latest code from GitHub.
+2. Pull updates from the `prod-vm` branch.
+3. Rebuild Docker image.
+4. Recreate application container.
+5. Remove unused Docker images.
+6. Store deployment logs.
+
+### Deployment Logs
+
+```text
+/home/yassine/deploy.log
+```
+
+### Benefits
+
+* Fully automated deployment.
+* No manual intervention required.
+* No public SSH exposure.
+* Compatible with Proxmox and NAT environments.
+* Automatic Docker image cleanup.
+* Continuous synchronization with the production branch.
+
+---
+
 ## Notes
 
-* The database is automatically created at startup
-* The database can be automatically seeded with demo users
-* If models are modified, the SQLite database may need to be recreated
-* Authentication is handled with JWT tokens stored in HTTP-only cookies
-* Passwords are securely hashed before storage
-
+* The SQLite database is automatically created on startup.
+* Authentication relies on JWT tokens stored in HTTP-only cookies.
+* Passwords are hashed before storage using Argon2.
+* Pagination is implemented on the public homepage and search results.
+* Docker is used for production deployment.

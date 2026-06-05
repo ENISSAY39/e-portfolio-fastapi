@@ -1,3 +1,10 @@
+/* RESET ET STYLES GÉNÉRAUX */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     background-color: #e5e7eb;
@@ -6,6 +13,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.search-form input {
+    width: 350px;
 }
 
 /* HEADER */
@@ -58,6 +69,7 @@ body {
 
     display: flex;
     gap: 12px;
+    align-items: center;
 }
 
 .search-form input {
@@ -93,6 +105,7 @@ body {
 /* CONTENT */
 .container {
     margin-top: 40px;
+    margin-bottom: 40px;
 
     width: 70%;
     max-width: 900px;
@@ -120,6 +133,9 @@ body {
     border-radius: 14px;
 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    flex-direction: column;
 }
 
 .portfolio-list strong {
@@ -143,6 +159,7 @@ body {
     font-weight: bold;
 
     transition: 0.2s;
+    width: fit-content;
 }
 
 .portfolio-list a:hover {
@@ -194,4 +211,30 @@ body {
     color: #2563eb;
     font-weight: bold;
     font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+    }
+
+    .search-form {
+        flex-direction: column;
+        padding: 0 20px;
+    }
+
+    .search-form input {
+        width: 100%;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
 }

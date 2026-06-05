@@ -1,8 +1,8 @@
 from fastapi import FastAPI
+
+
 from fastapi.staticfiles import StaticFiles
 from core.database_2 import create_db_and_tables
-
-
 from routers import auth, user, experience, education
 from seed import seed
 

@@ -2,38 +2,38 @@
 <html lang="fr">
 
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', path='create_user.css') }}">
+    <link rel="stylesheet" href="/static/create_user.css">
 
     <meta charset="UTF-8">
-    <title>Ajouter un utilisateur</title>
+    <title>Add a user</title>
 
 </head>
 
 <body>
 
     <div class="container">
-        <h1>Ajouter un utilisateur</h1>
+        <h1>Add a user</h1>
 
         <form action="/create_user" method="post">
-            <label>Nom :</label>
+            <label>Name :</label>
             <input type="text" name="name" required>
 
-            <label>Prénom :</label>
+            <label>First name :</label>
             <input type="text" name="first_name" required>
 
-            <label>Date de naissance :</label>
+            <label>Date of birth :</label>
             <input type="date" name="birth_date" required>
 
             <label>Email :</label>
             <input type="email" name="mail" required>
 
-            <label>Mot de passe :</label>
+            <label>pass word :</label>
             <input type="password" name="password" required>
 
-            <label>Téléphone :</label>
+            <label>Cell phone :</label>
             <input type="tel" name="phone" required>
 
-            <button type="submit">Ajouter</button>
+            <button type="submit">Add</button>
         </form>
     </div>
 
