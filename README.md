@@ -188,8 +188,12 @@ Relationship rules:
 │
 ├── routers/
 │   ├── auth.py
-│   ├── profil.py
-│   └── public_portfolio.py
+│   ├── education.py
+│   └── experience.py
+│   └── user.py
+    
+
+
 │
 ├── schemas/
 │   ├── User.py
@@ -202,6 +206,9 @@ Relationship rules:
 │   ├── login_style.css
 │   ├── create_user.css
 │   └── public_profile.css
+│   └── login.css
+
+
 │
 ├── templates/
 │   ├── home.html
@@ -210,6 +217,8 @@ Relationship rules:
 │   ├── experience.html
 │   ├── education.html
 │   └── public_profile.html
+│   └── create_user.html
+
 │
 ├── docker-compose.yml
 ├── dockerfile
