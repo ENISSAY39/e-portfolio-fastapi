@@ -256,6 +256,53 @@ env\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+## Dependencies
+
+This section explains the key dependencies and why they were chosen.
+
+### Core Framework
+
+| Package | Role |
+|---|---|
+| `fastapi` | Web framework — chosen for its automatic OpenAPI docs, native Pydantic integration, and async support |
+| `uvicorn` | ASGI server used to run the FastAPI app in production |
+| `starlette` | Underlying toolkit FastAPI is built on (routing, middleware, static files) |
+| `jinja2` | HTML templating engine for server-side rendering |
+| `python-multipart` | Required to handle HTML form submissions (login, registration) |
+
+### Database
+
+| Package | Role |
+|---|---|
+| `sqlmodel` | ORM chosen for its dual role: defines models used both as database tables and as Pydantic validation schemas, avoiding code duplication |
+| `sqlalchemy` | Underlying database engine used by SQLModel |
+| `greenlet` | Required by SQLAlchemy for async context support |
+
+### Security
+
+| Package | Role |
+|---|---|
+| `argon2-cffi` | Argon2 password hashing — chosen over bcrypt or SHA-256 for its resistance to GPU and ASIC brute-force attacks (memory-hard algorithm) |
+| `pwdlib` | High-level wrapper around argon2-cffi for password hashing/verification |
+| `pyjwt` | JWT token generation and verification for stateless authentication |
+| `python-dotenv` | Loads environment variables (secret key, config) from a `.env` file |
+
+### Validation
+
+| Package | Role |
+|---|---|
+| `pydantic` | Data validation library, used natively by FastAPI for request/response schemas |
+| `annotated-types` | Extends Python type annotations, used internally by Pydantic |
+
+### Dev & CLI
+
+| Package | Role |
+|---|---|
+| `fastapi-cli` | Provides the `fastapi run` and `fastapi dev` commands |
+| `click`, `typer`, `rich` | CLI utilities used internally by fastapi-cli |
+| `watchfiles` | File watching for hot-reload in development mode |
+
+> **Note:** Some packages in `requirements.txt` are transitive dependencies (automatically installed by the packages above) and are not imported directly in the application code.
 
 ### 4. Start the Application
 
