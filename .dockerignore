@@ -1,0 +1,5 @@
+envTutoFastAPI/
+__pycache__/
+.git/
+.vscode/
+e-portfolio-venv/

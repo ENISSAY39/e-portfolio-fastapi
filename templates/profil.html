@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Profil utilisateur</title>
+    <link rel="stylesheet" href="/static/base.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Welcome {{ first_name }} {{ name }}</h1>
+
+            <form action="/logout" method="get">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+
+        <!-- Infos utilisateur -->
+        <div>
+            <p><strong>Name :</strong> {{ name }}</p>
+            <p><strong>First name :</strong> {{ first_name }}</p>
+            <p><strong>Age :</strong> {{ age }}</p>
+            <p><strong>Email :</strong> {{ mail }}</p>
+            <p><strong>Cell phone :</strong> {{ phone }}</p>
+        </div>
+
+        <hr>
+
+        <!-- Expériences -->
+        <h2>My Experiences</h2>
+
+        <ul>
+            {% for exp in experiences %}
+            <li>
+                <strong>{{ exp.title }}</strong> - {{ exp.company }}<br>
+                <small>{{ exp.date_start }} → {{ exp.date_end }}</small><br>
+                {{ exp.description }}
+
+                <!-- ACTIONS -->
+                <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+
+                    <!-- Modifier -->
+                    <a href="/profil/experience/edit/{{ exp.id }}">
+                        <button type="button">Modifier</button>
+                    </a>
+
+                    <!-- Supprimer -->
+                    <form action="/profil/experience/delete/{{ exp.id }}" method="post" style="margin: 0;">
+                        <button type="submit" style="background-color: #dc3545;">Supprimer</button>
+                    </form>
+
+                </div>
+            </li>
+            {% else %}
+            <li>No experience available at the moment.</li>
+            {% endfor %}
+        </ul>
+
+        <hr>
+
+        <!-- Ajouter -->
+        <a href="/profil/experience">
+            <button type="button">Add an experience</button>
+        </a>
+
+        <!-- Education -->
+        <hr>
+        <h2>My Education</h2>
+
+        <ul>
+            {% for edu in educations %}
+            <li>
+                <strong>{{ edu.school_name }}</strong> - {{ edu.major }}<br>
+                <small>{{ edu.date_start }} → {{ edu.date_end }}</small><br>
+                {{ edu.description }}
+
+                <!-- ACTIONS -->
+                <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+
+                    <!-- Modifier -->
+                    <a href="/profil/education/edit/{{ edu.id }}">
+                        <button type="button">Modify</button>
+                    </a>
+
+                    <!-- Supprimer -->
+                    <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
+                        <button type="submit" style="background-color: #dc3545;">Delete</button>
+                    </form>
+
+                </div>
+            </li>
+            {% else %}
+            <li>No education available at the moment.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Ajouter -->
+        <a href="/profil/education">
+            <button type="button">Add an education</button>
+        </a>
+
+    </div>
+
+</body>
+
+</html>

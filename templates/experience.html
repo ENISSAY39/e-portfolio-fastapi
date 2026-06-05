@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Expérience</title>
+    <link rel="stylesheet" href="/static/base.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>
+            {% if exp %}
+            Modify an experience
+            {% else %}
+            Add an experience
+            {% endif %}
+        </h1>
+
+        <form action="{% if exp %}/profil/experience/edit/{{ exp.id }}{% else %}/profil/experience{% endif %}"
+            method="post">
+
+            <label>Titre :</label>
+            <input type="text" name="title" value="{{ exp.title if exp else '' }}" required>
+
+            <label>Start date :</label>
+            <input type="date" name="date_start" value="{{ exp.date_start.strftime('%Y-%m-%d') if exp else '' }}"
+                required>
+
+            <label>End date :</label>
+            <input type="date" name="date_end" value="{{ exp.date_end.strftime('%Y-%m-%d') if exp else '' }}" required>
+
+            <label>Description :</label>
+            <textarea name="description" rows="3" required>{{ exp.description if exp else '' }}</textarea>
+
+            <label>Entreprise :</label>
+            <input type="text" name="company" value="{{ exp.company if exp else '' }}" required>
+
+            <button type="submit">
+                {% if exp %}Update{% else %}Add{% endif %}
+            </button>
+
+        </form>
+
+        <br>
+
+        <a href="/profil">
+            <button type="button">Back</button>
+        </a>
+
+    </div>
+
+</body>
+
+</html>

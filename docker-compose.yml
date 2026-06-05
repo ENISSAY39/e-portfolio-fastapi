@@ -1,0 +1,12 @@
+services:
+  eportfolio:
+    build: .
+    container_name: eportfolio-app
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./database.db:/app/database.db
+
+    restart: unless-stopped

@@ -1,0 +1,99 @@
+/* Modern public profile CSS */
+body {
+    background: #f4f6fb;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-container {
+    max-width: 700px;
+    margin: 40px auto 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 32px rgba(37, 99, 235, 0.08), 0 1.5px 6px rgba(0, 0, 0, 0.04);
+    padding: 48px 36px 36px 36px;
+}
+
+.profile-header h1 {
+    font-size: 2.7rem;
+    font-weight: 800;
+    color: #2563eb;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+
+.profile-header .profile-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: #333;
+    font-size: 1.13rem;
+    margin-bottom: 0;
+    background: #f5f8ff;
+    border-radius: 8px;
+    padding: 10px 18px;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-header .profile-contact strong {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.profile-header .profile-contact {
+    color: #444;
+    font-size: 1.08rem;
+    margin-bottom: 0;
+}
+
+.profile-section {
+    margin-bottom: 36px;
+}
+
+.profile-section h2 {
+    color: #2563eb;
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.profile-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-list li {
+    background: #f5f8ff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+    margin-bottom: 18px;
+    padding: 22px 28px 18px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1.08rem;
+}
+
+.profile-list li strong {
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 1.13rem;
+}
+
+.profile-list li small {
+    color: #888;
+    font-size: 0.98rem;
+}
+
+@media (max-width: 800px) {
+    .profile-container {
+        padding: 18px 4vw;
+    }
+}

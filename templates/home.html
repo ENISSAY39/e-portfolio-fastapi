@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>e-portfolio</title>
+
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='base.css') }}"> -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='home.css') }}"> -->
+    <link rel="stylesheet" href="/static/home.css">
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <h1>Welcome to Public e-Portfolios</h1>
+
+        <div class="header-buttons">
+
+            <a href="/login">
+                <button type="button">Login</button>
+            </a>
+
+            <a href="/create_user">
+                <button type="button">Sign Up</button>
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- SEARCH -->
+    <form action="/search" method="get" class="search-form">
+
+        <input type="text" name="query" placeholder="Search a portfolio..." value="{{ query if query else '' }}">
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+    <!-- CONTENT -->
+    <div class="container">
+
+        <h3>
+            Here you can find the available portfolios.
+            Click on "View portfolio" to see each profile.
+        </h3>
+
+        <ul class="portfolio-list">
+
+            {% for user in users %}
+
+            <li>
+
+                <strong>
+                    {{ user.name }}
+                </strong>
+
+                <br>
+
+                <a href="/portfolio/{{ user.id }}">
+                    View portfolio
+                </a>
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+        <!-- PAGINATION -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            <!-- Previous button -->
+            {% if has_previous %}
+            <a
+                href="{% if query %}?query={{ query }}&page={{ previous_page }}{% else %}?page={{ previous_page }}{% endif %}">
+                Previous
+            </a>
+            {% else %}
+            <button disabled>Previous</button>
+            {% endif %}
+
+            <!-- Page info -->
+            <span class="pagination-info">
+                Page {{ current_page }} of {{ total_pages }}
+            </span>
+
+            <!-- Next button -->
+            {% if has_next %}
+            <a href="{% if query %}?query={{ query }}&page={{ next_page }}{% else %}?page={{ next_page }}{% endif %}">
+                Next
+            </a>
+            {% else %}
+            <button disabled>Next</button>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
