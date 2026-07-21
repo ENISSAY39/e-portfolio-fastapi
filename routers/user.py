@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 from datetime import date
 
-from core.database_2 import get_session
+from core.database import get_session
 from core.security import hash_password, decode_access_token
 
 from schemas.User import User

@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
-from core.database_2 import get_session
+from core.database import get_session
 from core.security import verify_password, create_access_token
 from schemas.User import User
 

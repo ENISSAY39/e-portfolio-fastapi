@@ -8,6 +8,6 @@ class User(SQLModel, table=True):
     name: str
     first_name: str
     birth_date: date
-    mail: str
+    mail: str = Field(index=True, unique=True)
     phone: str
     hashed_password: str
