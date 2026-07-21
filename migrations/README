@@ -1,0 +1,9 @@
+Database migrations are managed by Alembic.
+
+Create a migration after changing SQLModel metadata:
+
+    alembic revision --autogenerate -m "describe the change"
+
+Apply all migrations:
+
+    alembic upgrade head
