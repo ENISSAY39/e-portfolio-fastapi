@@ -1,51 +1,56 @@
-/* STYLES GLOBAUX GÉNÉRAUX */
+/* Réinitialise les espacements natifs et inclut bordures et padding dans les dimensions. */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Définit la typographie et la couleur de texte communes aux pages internes. */
 body {
     font-family: Arial, sans-serif;
     color: #333;
 }
 
-/* TITRES */
+/* Espace le titre principal du contenu qui le suit. */
 h1 {
     margin-bottom: 20px;
 }
 
+/* Sépare les titres de section des blocs voisins. */
 h2 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
 
+/* Donne une respiration verticale aux titres de troisième niveau. */
 h3 {
     margin-top: 15px;
     margin-bottom: 15px;
 }
 
-/* TEXT */
+/* Rend les paragraphes lisibles grâce à un interligne et des marges régulières. */
 p {
     margin: 8px 0;
     line-height: 1.6;
 }
 
-/* LISTES */
+/* Conserve l'indentation des puces et éloigne les listes du contenu précédent. */
 ul {
     margin-top: 10px;
     padding-left: 20px;
 }
 
+/* Sépare visuellement chaque élément d'une liste. */
 li {
     margin-bottom: 10px;
 }
 
-/* FORM */
+/* Détache les formulaires des éléments affichés juste au-dessus. */
 form {
     margin-top: 20px;
 }
 
+/* Uniformise les champs texte et zones multiligne dans toute l'application. */
 form input,
 form textarea {
     width: 100%;
@@ -56,12 +61,13 @@ form textarea {
     font-family: inherit;
 }
 
+/* Autorise uniquement le redimensionnement vertical et garantit une hauteur utile. */
 textarea {
     resize: vertical;
     min-height: 120px;
 }
 
-/* LIENS */
+/* Donne aux liens la couleur d'action principale sans soulignement permanent. */
 a {
     color: #007BFF;
     text-decoration: none;
@@ -69,12 +75,13 @@ a {
     transition: color 0.2s;
 }
 
+/* Renforce le retour visuel au survol d'un lien. */
 a:hover {
     color: #0056b3;
     text-decoration: underline;
 }
 
-/* BUTTON */
+/* Définit l'apparence commune des boutons d'action. */
 button {
     padding: 10px 15px;
     border: none;
@@ -86,13 +93,24 @@ button {
     transition: background 0.2s;
 }
 
+/* Assombrit le bouton survolé pour signaler son interactivité. */
 button:hover {
     background: #0056b3;
 }
 
-/* HR */
+/* Transforme les séparateurs en lignes fines avec une marge régulière. */
 hr {
     margin: 25px 0;
     border: none;
     border-top: 1px solid #ddd;
+}
+
+/* Met en évidence les erreurs de formulaire sans modifier la mise en page globale. */
+.form-error {
+    margin: 12px 0;
+    padding: 10px 12px;
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    background: #fff1f2;
+    color: #b42318;
 }

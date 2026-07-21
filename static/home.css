@@ -1,10 +1,11 @@
-/* RESET ET STYLES GÉNÉRAUX */
+/* Réinitialise les espacements natifs et stabilise le calcul des dimensions. */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Organise la page d'accueil en colonne centrée sur un fond gris clair. */
 body {
     margin: 0;
     background-color: #e5e7eb;
@@ -15,11 +16,12 @@ body {
     align-items: center;
 }
 
+/* Fixe la largeur initiale du champ de recherche sur les écrans larges. */
 .search-form input {
     width: 350px;
 }
 
-/* HEADER */
+/* Barre d'en-tête pleine largeur avec titre à gauche et actions à droite. */
 .header {
     width: 100%;
     box-sizing: border-box;
@@ -32,17 +34,20 @@ body {
     align-items: center;
 }
 
+/* Met en avant le titre du service sur le fond bleu de l'en-tête. */
 .header h1 {
     margin: 0;
     font-size: 32px;
     color: white;
 }
 
+/* Aligne horizontalement les actions d'inscription et de connexion. */
 .header-buttons {
     display: flex;
     gap: 12px;
 }
 
+/* Présente les boutons de navigation comme des actions blanches contrastées. */
 .header-buttons a button {
     background-color: white;
     color: #2563eb;
@@ -59,11 +64,12 @@ body {
     transition: 0.2s;
 }
 
+/* Atténue légèrement le bouton d'en-tête survolé. */
 .header-buttons a button:hover {
     opacity: 0.85;
 }
 
-/* SEARCH BAR */
+/* Dispose le champ et le bouton de recherche sur une même ligne. */
 .search-form {
     margin-top: 40px;
 
@@ -72,6 +78,7 @@ body {
     align-items: center;
 }
 
+/* Donne au champ de recherche une surface confortable et arrondie. */
 .search-form input {
     width: 350px;
 
@@ -83,6 +90,7 @@ body {
     font-size: 16px;
 }
 
+/* Habille le bouton de recherche avec la couleur d'action principale. */
 .search-form button {
     background-color: #2563eb;
     color: white;
@@ -98,11 +106,12 @@ body {
     transition: 0.2s;
 }
 
+/* Fournit un retour visuel au survol du bouton de recherche. */
 .search-form button:hover {
     opacity: 0.9;
 }
 
-/* CONTENT */
+/* Limite la largeur du contenu central tout en conservant des marges verticales. */
 .container {
     margin-top: 40px;
     margin-bottom: 40px;
@@ -111,6 +120,7 @@ body {
     max-width: 900px;
 }
 
+/* Centre et met en avant le texte introductif de l'annuaire. */
 .container h3 {
     color: #2563eb;
     text-align: center;
@@ -118,12 +128,13 @@ body {
     font-size: 24px;
 }
 
-/* PORTFOLIO LIST */
+/* Retire les puces natives pour présenter les résultats sous forme de cartes. */
 .portfolio-list {
     list-style: none;
     padding: 0;
 }
 
+/* Matérialise chaque portfolio comme une carte verticale indépendante. */
 .portfolio-list li {
     background-color: white;
 
@@ -138,11 +149,13 @@ body {
     flex-direction: column;
 }
 
+/* Met le nom de l'utilisateur au premier plan dans sa carte. */
 .portfolio-list strong {
     font-size: 22px;
     color: #2563eb;
 }
 
+/* Transforme le lien du portfolio en bouton compact. */
 .portfolio-list a {
     display: inline-block;
 
@@ -162,11 +175,12 @@ body {
     width: fit-content;
 }
 
+/* Atténue le lien-bouton lorsqu'il est survolé. */
 .portfolio-list a:hover {
     opacity: 0.9;
 }
 
-/* PAGINATION */
+/* Centre les contrôles précédent, position courante et suivant. */
 .pagination {
     display: flex;
     justify-content: center;
@@ -177,6 +191,7 @@ body {
     margin-bottom: 40px;
 }
 
+/* Uniformise les liens actifs et boutons inactifs de pagination. */
 .pagination a,
 .pagination button {
     background-color: #2563eb;
@@ -196,44 +211,52 @@ body {
     transition: 0.2s;
 }
 
+/* Fournit un retour de survol aux contrôles de pagination interactifs. */
 .pagination a:hover,
 .pagination button:hover {
     opacity: 0.9;
 }
 
+/* Distingue clairement un contrôle indisponible et neutralise le pointeur d'action. */
 .pagination button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
     opacity: 0.6;
 }
 
+/* Affiche la position courante avec la couleur principale. */
 .pagination-info {
     color: #2563eb;
     font-weight: bold;
     font-size: 14px;
 }
 
-/* RESPONSIVE */
+/* Adapte la mise en page aux téléphones et petits écrans. */
 @media (max-width: 600px) {
+    /* Utilise davantage de largeur disponible pour la liste des portfolios. */
     .container {
         width: 90%;
     }
 
+    /* Empile le champ et le bouton de recherche avec une marge latérale. */
     .search-form {
         flex-direction: column;
         padding: 0 20px;
     }
 
+    /* Permet au champ de recherche de suivre la largeur de son conteneur mobile. */
     .search-form input {
         width: 100%;
     }
 
+    /* Empile le titre et les actions de l'en-tête sur petit écran. */
     .header {
         flex-direction: column;
         gap: 15px;
         padding: 20px;
     }
 
+    /* Réduit le titre afin d'éviter les débordements horizontaux. */
     .header h1 {
         font-size: 24px;
     }

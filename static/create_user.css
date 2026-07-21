@@ -1,3 +1,4 @@
+/* Centre la carte d'inscription dans la fenêtre sur un fond neutre. */
 body {
     font-family: Arial, sans-serif;
     background: #f4f6f8;
@@ -7,6 +8,7 @@ body {
     height: 100vh;
 }
 
+/* Matérialise le formulaire sous forme de carte compacte. */
 .container {
     background: white;
     padding: 30px;
@@ -15,6 +17,7 @@ body {
     width: 320px;
 }
 
+/* Hiérarchise le titre de la carte avec la couleur principale. */
 h1 {
     text-align: center;
     margin-bottom: 20px;
@@ -22,6 +25,7 @@ h1 {
     color: #007BFF;
 }
 
+/* Étend et espace uniformément tous les champs de saisie. */
 input {
     width: 100%;
     padding: 10px;
@@ -30,10 +34,12 @@ input {
     border-radius: 5px;
 }
 
+/* Utilise une taille discrète mais lisible pour les libellés. */
 label {
     font-size: 14px;
 }
 
+/* Transforme le bouton de soumission en action principale pleine largeur. */
 button {
     width: 100%;
     padding: 10px;
@@ -45,6 +51,16 @@ button {
     margin-top: 10px;
 }
 
+/* Assombrit l'action principale lors du survol. */
 button:hover {
     background: #0056b3;
+}
+
+/* Affiche les erreurs de validation dans un encart rouge clair. */
+.form-error {
+    margin-bottom: 14px;
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff1f2;
+    color: #b42318;
 }

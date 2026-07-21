@@ -2,22 +2,26 @@
 <html lang="fr">
 
 <head>
+    <!-- Métadonnées de la page publique listant les portfolios. -->
     <meta charset="UTF-8">
     <title>e-portfolio</title>
 
+    <!-- Anciennes variantes Jinja conservées à titre de référence mais volontairement inactives. -->
     <!-- <link rel="stylesheet" href="{{ url_for('static', path='base.css') }}"> -->
     <!-- <link rel="stylesheet" href="{{ url_for('static', path='home.css') }}"> -->
+    <!-- Feuille de style actuellement chargée par le navigateur. -->
     <link rel="stylesheet" href="/static/home.css">
 
 </head>
 
 <body>
 
-    <!-- HEADER -->
+    <!-- En-tête public : titre du service et accès à l'authentification. -->
     <div class="header">
 
         <h1>Welcome to Public e-Portfolios</h1>
 
+        <!-- Actions proposées aux visiteurs non connectés. -->
         <div class="header-buttons">
 
             <a href="/login">
@@ -32,9 +36,10 @@
 
     </div>
 
-    <!-- SEARCH -->
+    <!-- Recherche GET : le terme reste dans l'URL et peut être combiné avec la pagination. -->
     <form action="/search" method="get" class="search-form">
 
+        {# Réinjecte la recherche courante pour que le champ reste renseigné après soumission. #}
         <input type="text" name="query" placeholder="Search a portfolio..." value="{{ query if query else '' }}">
 
         <button type="submit">
@@ -43,7 +48,7 @@
 
     </form>
 
-    <!-- CONTENT -->
+    <!-- Contenu principal : introduction, résultats et navigation entre les pages. -->
     <div class="container">
 
         <h3>
@@ -51,18 +56,22 @@
             Click on "View portfolio" to see each profile.
         </h3>
 
+        <!-- Liste des utilisateurs fournis par la route publique. -->
         <ul class="portfolio-list">
 
+            {# Produit une carte et un lien public pour chaque utilisateur de la page courante. #}
             {% for user in users %}
 
             <li>
 
+                {# Le nom est échappé automatiquement par Jinja avant affichage. #}
                 <strong>
                     {{ user.name }}
                 </strong>
 
                 <br>
 
+                <!-- L'identifiant construit l'URL de consultation du portfolio sélectionné. -->
                 <a href="/portfolio/{{ user.id }}">
                     View portfolio
                 </a>
@@ -73,10 +82,12 @@
 
         </ul>
 
-        <!-- PAGINATION -->
+        {# Masque entièrement la pagination lorsqu'une seule page suffit. #}
+        <!-- Pagination des résultats, avec conservation éventuelle du terme recherché. -->
         {% if total_pages > 1 %}
         <div class="pagination">
-            <!-- Previous button -->
+            {# Active le lien précédent uniquement si la route indique qu'une page existe. #}
+            <!-- Contrôle de navigation vers la page précédente. -->
             {% if has_previous %}
             <a
                 href="{% if query %}?query={{ query }}&page={{ previous_page }}{% else %}?page={{ previous_page }}{% endif %}">
@@ -86,12 +97,13 @@
             <button disabled>Previous</button>
             {% endif %}
 
-            <!-- Page info -->
+            <!-- Indication de position dans le jeu de résultats. -->
             <span class="pagination-info">
                 Page {{ current_page }} of {{ total_pages }}
             </span>
 
-            <!-- Next button -->
+            {# Active le lien suivant uniquement si la route indique qu'une page existe. #}
+            <!-- Contrôle de navigation vers la page suivante. -->
             {% if has_next %}
             <a href="{% if query %}?query={{ query }}&page={{ next_page }}{% else %}?page={{ next_page }}{% endif %}">
                 Next

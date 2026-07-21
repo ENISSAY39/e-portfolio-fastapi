@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <head>
+    <!-- Métadonnées et styles dédiés à la page de connexion. -->
     <meta charset="UTF-8">
     <title>Sign In</title>
 
@@ -10,9 +11,10 @@
 
 <body>
 
-    <!-- HEADER -->
+    <!-- En-tête public avec une action de retour vers l'accueil. -->
     <div class="header">
         <h1>Welcome to Public e-Portfolios</h1>
+        <!-- Navigation simple : le bouton n'envoie aucun formulaire. -->
         <div class="header-buttons">
             <a href="/">
                 <button type="button">Home</button>
@@ -20,26 +22,36 @@
         </div>
     </div>
 
-    <!-- TITLE -->
-
-
-    <!-- LOGIN -->
+    <!-- Carte principale d'authentification. -->
     <div class="login-container">
 
         <h2>Sign In</h2>
 
+        {# Affiche une erreur d'identifiants ou de validation fournie par la route. #}
+        {% if error %}
+        <p class="form-error" role="alert">{{ error }}</p>
+        {% endif %}
+
+        <!-- Formulaire de connexion transmis par POST pour ne pas exposer les identifiants dans l'URL. -->
         <form action="/login" method="post">
+            {# Jeton anti-CSRF vérifié avant toute tentative d'authentification. #}
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
-            <input type="email" name="mail" placeholder="Email" required>
+            {# L'adresse est restaurée après une erreur, contrairement au mot de passe. #}
+            <input type="email" name="mail" placeholder="Email" value="{{ mail if mail else '' }}"
+                autocomplete="email" required>
 
-            <input type="password" name="password" placeholder="Password" required>
+            <!-- Le navigateur peut utiliser son gestionnaire de mots de passe sans préremplissage serveur. -->
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
 
+            <!-- Déclenche la vérification des identifiants par le serveur. -->
             <button type="submit">
                 Connect
             </button>
 
         </form>
 
+        <!-- Invitation à créer un compte pour les nouveaux visiteurs. -->
         <div class="footer">
             you don't have an account?
             <a href="/create_user">Sign up</a>
