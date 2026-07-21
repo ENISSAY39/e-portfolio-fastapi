@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 from pwdlib import PasswordHash
+from pwdlib.exceptions import UnknownHashError
 
 from core.config import settings
 
@@ -26,7 +27,7 @@ def verify_password(plain_password: str, hashed_password: str):
     """Verify a candidate password and treat malformed hashes as a mismatch."""
     try:
         return password_hash.verify(plain_password, hashed_password)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, UnknownHashError):
         # Authentication must fail closed if stored data cannot be parsed.
         return False
 
