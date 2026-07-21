@@ -2,17 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 from pwdlib import PasswordHash
-import os 
-from dotenv import load_dotenv
+
+from core.config import settings
 
 
-
-
-load_dotenv() 
-
-SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 password_hash = PasswordHash.recommended()
@@ -25,22 +19,24 @@ def hash_password(password: str):
 
 # Verify password
 def verify_password(plain_password: str, hashed_password: str):
-    return password_hash.verify(plain_password, hashed_password)
+    try:
+        return password_hash.verify(plain_password, hashed_password)
+    except (TypeError, ValueError):
+        return False
 
 
 # Create JWT token
 def create_access_token(data: dict):
     to_encode = data.copy()
 
-    expire = datetime.now(timezone.utc) + timedelta(
-        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(minutes=settings.access_token_expire_minutes)
 
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "iat": now})
 
     encoded_jwt = jwt.encode(
         to_encode,
-        SECRET_KEY,
+        settings.secret_key,
         algorithm=ALGORITHM,
     )
 
@@ -48,15 +44,19 @@ def create_access_token(data: dict):
 
 
 # Decode JWT token
-def decode_access_token(token: str):
+def decode_access_token(token: str | None):
+    if not token:
+        return None
+
     try:
         payload = jwt.decode(
             token,
-            SECRET_KEY,
+            settings.secret_key,
             algorithms=[ALGORITHM],
+            options={"require": ["exp", "sub"]},
         )
 
         return payload
 
-    except jwt.InvalidTokenError:
+    except (jwt.InvalidTokenError, TypeError):
         return None
