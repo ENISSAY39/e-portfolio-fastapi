@@ -269,9 +269,30 @@ docker compose logs -f eportfolio
 ```
 
 The application is available at `http://127.0.0.1:8000` and pgAdmin at
-`http://127.0.0.1:5050`. Docker Compose is the reference development and test
+`http://127.0.0.1:5050`. Docker Compose is the reference full-stack development
 workflow for this project; running `fastapi dev` directly on the host is not
-required.
+required. The isolated automated test suite runs directly in Python as
+described below.
+
+## Automated tests
+
+The automated test suite uses a temporary SQLite database and does not read or
+modify the developer's `database.db`. Run it in its own Python 3.12 virtual
+environment so packages installed for another application cannot conflict with
+this project's pinned dependencies:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m pytest
+```
+
+`pytest.ini` enables branch coverage for the application code and enforces an
+initial minimum of 75%. The terminal report lists uncovered lines. GitHub
+Actions runs the same command for every push and pull request, after checking
+that the application imports and that Alembic can build a schema matching the
+SQLModel metadata on an isolated SQLite database.
 
 ## Dependencies
 
@@ -320,6 +341,14 @@ This section explains the key dependencies and why they were chosen.
 | `fastapi-cli` | Provides the `fastapi run` and `fastapi dev` commands |
 | `click`, `typer`, `rich` | CLI utilities used internally by fastapi-cli |
 | `watchfiles` | File watching for hot-reload in development mode |
+
+### Tests
+
+| Package | Role |
+|---|---|
+| `pytest` | Discovers and executes unit and HTTP integration tests |
+| `httpx` | Provides the transport used by Starlette's synchronous `TestClient` |
+| `pytest-cov`, `coverage` | Measure line and branch coverage and enforce the initial CI threshold |
 
 > **Note:** Some packages in `requirements.txt` are transitive dependencies (automatically installed by the packages above) and are not imported directly in the application code.
 
