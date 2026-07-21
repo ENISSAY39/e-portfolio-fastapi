@@ -2,7 +2,8 @@
 
 ## Live Demo
 
-Deployed application:
+The former VM deployment is no longer an active production target. This URL is
+retained only as a historical project reference:
 
 https://k2vm-229.mde.epf.fr/
 
@@ -17,6 +18,10 @@ The platform provides both public and private features:
 * User registration
 * Secure authentication
 * Personal profile management
+* Editable biography and contact details
+* Skills management with proficiency levels
+* Project management with live and repository links
+* External portfolio links
 * Experience management
 * Education management
 * Public portfolio publication
@@ -54,7 +59,7 @@ The application follows a classic web architecture with a FastAPI backend, Jinja
 * Docker
 * Docker Compose
 * Git
-* Cron-based Continuous Deployment
+* Historical cron-based deployment reference
 
 ---
 
@@ -80,8 +85,17 @@ The application follows a classic web architecture with a FastAPI backend, Jinja
 ### Profile Management
 
 * Personal profile page
+* Identity and contact editing
+* Optional biography
 * Automatic age calculation from birth date
 * Display personal information
+
+### Portfolio Content Management
+
+* Create, update, and delete skills with a level from 1 to 5
+* Create, update, and delete projects with technologies and optional URLs
+* Create, update, and delete labelled external links
+* Display all content on both the private workspace and public portfolio
 
 ### Experience Management
 
@@ -108,14 +122,22 @@ The application follows a classic web architecture with a FastAPI backend, Jinja
 
 ## Application Routes
 
-| Route             | Description       |
-| ----------------- | ----------------- |
-| `/`               | Public homepage   |
-| `/search`         | Portfolio search  |
-| `/login`          | Login page        |
-| `/create_user`    | User registration |
-| `/profil`         | Private dashboard |
-| `/portfolio/{id}` | Public portfolio  |
+| Route                     | Description                         |
+| ------------------------- | ----------------------------------- |
+| `/`                       | Public homepage                     |
+| `/search`                 | Portfolio search                    |
+| `/login`                  | Login page                          |
+| `/create_user`            | User registration                   |
+| `/profil`                 | Private portfolio workspace         |
+| `/profil/edit`            | Edit identity, contact details, bio |
+| `/profil/skill`           | Create a skill                      |
+| `/profil/project`         | Create a project                    |
+| `/profil/link`            | Create an external link             |
+| `/portfolio/{id}`         | Public portfolio                    |
+
+Skill, project, and link editing uses
+`/profil/{resource}/edit/{id}`. Their delete routes use `POST` at
+`/profil/{resource}/delete/{id}` and require a valid CSRF token.
 
 ---
 
@@ -134,6 +156,7 @@ The application uses a relational database implemented with SQLModel.
 | mail            | String      |
 | phone           | String      |
 | hashed_password | String      |
+| bio             | Optional string |
 
 ### Experience
 
@@ -159,6 +182,36 @@ The application uses a relational database implemented with SQLModel.
 | description | String      |
 | user_id     | Foreign Key |
 
+### Skill
+
+| Field   | Type                  |
+| ------- | --------------------- |
+| id      | Primary Key           |
+| name    | String                |
+| level   | Integer (1 through 5) |
+| user_id | Foreign Key           |
+
+### Project
+
+| Field          | Type            |
+| -------------- | --------------- |
+| id             | Primary Key     |
+| title          | String          |
+| description    | String          |
+| technologies   | Optional string |
+| project_url    | Optional URL    |
+| repository_url | Optional URL    |
+| user_id        | Foreign Key     |
+
+### ExternalLink
+
+| Field   | Type        |
+| ------- | ----------- |
+| id      | Primary Key |
+| label   | String      |
+| url     | HTTP(S) URL |
+| user_id | Foreign Key |
+
 ---
 
 ## Relationships
@@ -171,10 +224,17 @@ A user can own multiple professional experiences.
 
 A user can own multiple education entries.
 
+### User → Skill / Project / ExternalLink (1:N)
+
+A user can own multiple skills, projects, and labelled external links. Every
+edit and delete operation verifies that the authenticated account owns the
+target record.
+
 Relationship rules:
 
 * One experience belongs to one user.
 * One education entry belongs to one user.
+* One skill, project, or external link belongs to one user.
 * Deleting a user removes access to their associated records.
 
 ---
@@ -184,43 +244,51 @@ Relationship rules:
 ```text
 .
 ├── core/
-│   ├── database_2.py
-│   └── security.py
-│
+│   ├── authentication.py
+│   ├── config.py
+│   ├── csrf.py
+│   ├── database.py
+│   ├── security.py
+│   └── validation.py
 ├── routers/
 │   ├── auth.py
+│   ├── content.py
 │   ├── education.py
-│   └── experience.py
+│   ├── experience.py
 │   └── user.py
-    
-
-
-│
 ├── schemas/
 │   ├── User.py
-│   ├── Experience.py
-│   └── Education.py
-│
+│   ├── Experiences.py
+│   ├── Education.py
+│   ├── Skills.py
+│   ├── Projects.py
+│   └── Links.py
 ├── static/
 │   ├── base.css
+│   ├── header.css
+│   ├── portfolio.css
+│   ├── forms.css
 │   ├── home.css
 │   ├── login_style.css
 │   ├── create_user.css
-│   └── public_profile.css
+│   ├── public_profile.css
 │   └── login.css
-
-
-│
 ├── templates/
+│   ├── _site_header.html
 │   ├── home.html
 │   ├── login.html
 │   ├── profil.html
+│   ├── profile_edit.html
+│   ├── skill.html
+│   ├── project.html
+│   ├── link.html
 │   ├── experience.html
 │   ├── education.html
-│   └── public_profile.html
+│   ├── public_profile.html
 │   └── create_user.html
-
-│
+├── migrations/
+│   └── versions/
+├── tests/
 ├── docker-compose.yml
 ├── dockerfile
 ├── requirements.txt
@@ -289,7 +357,7 @@ python -m pytest
 ```
 
 `pytest.ini` enables branch coverage for the application code and enforces a
-minimum of 90%. The terminal report lists uncovered lines. GitHub
+minimum of 95%. The terminal report lists uncovered lines. GitHub
 Actions runs the same command for every push and pull request, after checking
 that the application imports and that Alembic can build a schema matching the
 SQLModel metadata on an isolated SQLite database.
@@ -528,9 +596,12 @@ the shared development or production database.
 
 ---
 
-## Automated Deployment
+## Historical Automated Deployment
 
-The production environment uses an automated deployment strategy directly executed on the virtual machine.
+The project previously used the automated VM deployment strategy documented
+below. There is currently no active production VM or automated deployment
+target; these commands are historical and must not be run as an assumed live
+deployment workflow.
 
 Every 2 minutes, a deployment script checks the `prod-vm` branch and automatically deploys any new version.
 
@@ -591,4 +662,4 @@ echo "DEPLOY DONE $(date)"
 * Authentication relies on JWT tokens stored in HTTP-only cookies and all state-changing forms use CSRF tokens.
 * Passwords are hashed before storage using Argon2.
 * Pagination is implemented on the public homepage and search results.
-* Docker is used for production deployment.
+* Docker Compose is the reference local full-stack workflow; no production target is currently active.

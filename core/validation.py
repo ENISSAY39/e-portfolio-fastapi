@@ -2,6 +2,7 @@
 
 import re
 from datetime import date, datetime
+from urllib.parse import urlsplit
 
 from pydantic import EmailStr, TypeAdapter, ValidationError
 
@@ -21,6 +22,63 @@ def clean_text(value: str, label: str, max_length: int) -> str:
         raise ValueError(f"{label} is required.")
     if len(cleaned) > max_length:
         raise ValueError(f"{label} must contain at most {max_length} characters.")
+    return cleaned
+
+
+def clean_optional_text(
+    value: str,
+    label: str,
+    max_length: int,
+) -> str | None:
+    """Trim optional text and return ``None`` when the field is blank."""
+    cleaned = value.strip()
+    if not cleaned:
+        return None
+    if len(cleaned) > max_length:
+        raise ValueError(f"{label} must contain at most {max_length} characters.")
+    return cleaned
+
+
+def parse_skill_level(value: str) -> int:
+    """Parse the five-point proficiency selected by a skill form."""
+    try:
+        level = int(value)
+    except ValueError as exc:
+        raise ValueError("Skill level must be a whole number from 1 to 5.") from exc
+
+    if not 1 <= level <= 5:
+        raise ValueError("Skill level must be between 1 and 5.")
+    return level
+
+
+def validate_http_url(
+    value: str,
+    label: str,
+    *,
+    required: bool = False,
+) -> str | None:
+    """Validate an optional absolute HTTP(S) destination from a form."""
+    cleaned = value.strip()
+    if not cleaned:
+        if required:
+            raise ValueError(f"{label} is required.")
+        return None
+    if len(cleaned) > 2048:
+        raise ValueError(f"{label} must contain at most 2048 characters.")
+    if any(character.isspace() for character in cleaned):
+        raise ValueError(f"{label} must be a valid HTTP or HTTPS URL.")
+
+    try:
+        parsed = urlsplit(cleaned)
+        # Accessing ``hostname`` and ``port`` also rejects malformed bracketed
+        # hosts and non-numeric or out-of-range ports.
+        hostname = parsed.hostname
+        parsed.port
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a valid HTTP or HTTPS URL.") from exc
+
+    if parsed.scheme.lower() not in {"http", "https"} or not hostname:
+        raise ValueError(f"{label} must be a valid HTTP or HTTPS URL.")
     return cleaned
 
 

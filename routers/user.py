@@ -1,17 +1,20 @@
 """Routes de création de compte et d'affichage des profils privés ou publics."""
 
-from fastapi import APIRouter, Request, Form, Depends
+from datetime import date
+
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
-from datetime import date
 
 from core.authentication import get_authenticated_user
+from core.config import settings
 from core.csrf import validate_csrf_token
 from core.database import get_session
-from core.security import hash_password
+from core.security import create_access_token, hash_password
 from core.validation import (
+    clean_optional_text,
     clean_text,
     normalize_email,
     normalize_phone,
@@ -19,9 +22,12 @@ from core.validation import (
     validate_password,
 )
 
-from schemas.User import User
-from schemas.Experiences import Experience
 from schemas.Education import Education
+from schemas.Experiences import Experience
+from schemas.Links import ExternalLink
+from schemas.Projects import Project
+from schemas.Skills import Skill
+from schemas.User import User
 
 # Ce routeur regroupe les opérations centrées sur un utilisateur et son portfolio.
 router = APIRouter()
@@ -67,6 +73,18 @@ def public_portfolio(
         select(Education).where(Education.user_id == user.id)
     ).all()
 
+    skills = session.exec(
+        select(Skill).where(Skill.user_id == user.id).order_by(Skill.id)
+    ).all()
+    projects = session.exec(
+        select(Project).where(Project.user_id == user.id).order_by(Project.id)
+    ).all()
+    links = session.exec(
+        select(ExternalLink)
+        .where(ExternalLink.user_id == user.id)
+        .order_by(ExternalLink.id)
+    ).all()
+
     # Le template public reçoit l'utilisateur et les deux collections de son portfolio.
     return templates.TemplateResponse(
         request,
@@ -76,6 +94,9 @@ def public_portfolio(
             "user": user,
             "experiences": experiences,
             "educations": educations,
+            "skills": skills,
+            "projects": projects,
+            "links": links,
         },
     )
 
@@ -208,19 +229,36 @@ def show_profile(
         select(Education).where(Education.user_id == user.id)
     ).all()
 
+    skills = session.exec(
+        select(Skill).where(Skill.user_id == user.id).order_by(Skill.id)
+    ).all()
+    projects = session.exec(
+        select(Project).where(Project.user_id == user.id).order_by(Project.id)
+    ).all()
+    links = session.exec(
+        select(ExternalLink)
+        .where(ExternalLink.user_id == user.id)
+        .order_by(ExternalLink.id)
+    ).all()
+
     # Le template privé reçoit uniquement les informations du compte résolu par le JWT.
     response = templates.TemplateResponse(
         request,
         "profil.html",
         {
             "request": request,
+            "user": user,
             "name": user.name,
             "first_name": user.first_name,
             "age": calculate_age(user.birth_date),
             "mail": user.mail,
             "phone": user.phone,
+            "bio": user.bio,
             "experiences": experiences,
             "educations": educations,
+            "skills": skills,
+            "projects": projects,
+            "links": links,
         },
     )
 
@@ -229,4 +267,128 @@ def show_profile(
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
 
+    return response
+
+
+@router.get("/profil/edit", response_class=HTMLResponse)
+def show_profile_edit_form(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Display the identity, contact, and biography form for the current user."""
+    user = get_authenticated_user(request, session)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
+    return templates.TemplateResponse(
+        request,
+        "profile_edit.html",
+        {"request": request, "user": user, "form_values": {}},
+    )
+
+
+@router.post("/profil/edit")
+def update_profile(
+    request: Request,
+    csrf_token: str = Form(""),
+    name: str = Form(...),
+    first_name: str = Form(...),
+    birth_date: str = Form(...),
+    mail: str = Form(...),
+    phone: str = Form(...),
+    bio: str = Form(""),
+    session: Session = Depends(get_session),
+):
+    """Validate and update the authenticated user's editable profile fields."""
+    user = get_authenticated_user(request, session)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
+    validate_csrf_token(request, csrf_token)
+    form_values = {
+        "name": name,
+        "first_name": first_name,
+        "birth_date": birth_date,
+        "mail": mail,
+        "phone": phone,
+        "bio": bio,
+    }
+
+    try:
+        cleaned_name = clean_text(name, "Name", 100)
+        cleaned_first_name = clean_text(first_name, "First name", 100)
+        parsed_birth_date = parse_birth_date(birth_date)
+        normalized_mail = normalize_email(mail)
+        normalized_phone = normalize_phone(phone)
+        cleaned_bio = clean_optional_text(bio, "Biography", 3000)
+    except ValueError as exc:
+        return templates.TemplateResponse(
+            request,
+            "profile_edit.html",
+            {
+                "request": request,
+                "user": user,
+                "error": str(exc),
+                "form_values": form_values,
+            },
+            status_code=400,
+        )
+
+    duplicate = session.exec(
+        select(User).where(
+            User.mail == normalized_mail,
+            User.id != user.id,
+        )
+    ).first()
+    if duplicate:
+        return templates.TemplateResponse(
+            request,
+            "profile_edit.html",
+            {
+                "request": request,
+                "user": user,
+                "error": "An account already exists with this email address.",
+                "form_values": form_values,
+            },
+            status_code=409,
+        )
+
+    user_id = user.id
+    user.name = cleaned_name
+    user.first_name = cleaned_first_name
+    user.birth_date = parsed_birth_date
+    user.mail = normalized_mail
+    user.phone = normalized_phone
+    user.bio = cleaned_bio
+
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        user = session.get(User, user_id)
+        return templates.TemplateResponse(
+            request,
+            "profile_edit.html",
+            {
+                "request": request,
+                "user": user,
+                "error": "An account already exists with this email address.",
+                "form_values": form_values,
+            },
+            status_code=409,
+        )
+
+    # The email is the JWT subject, so every successful profile update renews
+    # the cookie and keeps authentication valid even when that email changed.
+    token = create_access_token(data={"sub": normalized_mail})
+    response = RedirectResponse("/profil", status_code=303)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        max_age=settings.access_token_expire_minutes * 60,
+        httponly=True,
+        samesite="lax",
+        secure=settings.cookie_secure_enabled,
+        path="/",
+    )
     return response

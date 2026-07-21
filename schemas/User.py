@@ -23,3 +23,6 @@ class User(SQLModel, table=True):
     mail: str = Field(index=True, unique=True)
     phone: str
     hashed_password: str
+    # The biography is optional so existing accounts and freshly registered
+    # users remain valid until they choose to complete their portfolio.
+    bio: Optional[str] = Field(default=None)

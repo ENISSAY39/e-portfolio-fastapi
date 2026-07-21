@@ -13,6 +13,9 @@ from core.database import engine
 from core.security import hash_password
 from schemas.Education import Education
 from schemas.Experiences import Experience
+from schemas.Links import ExternalLink  # noqa: F401
+from schemas.Projects import Project  # noqa: F401
+from schemas.Skills import Skill  # noqa: F401
 from schemas.User import User
 
 

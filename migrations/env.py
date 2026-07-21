@@ -16,6 +16,9 @@ from core.database import engine
 # registers their tables in SQLModel metadata for Alembic autogeneration.
 from schemas.Education import Education  # noqa: F401
 from schemas.Experiences import Experience  # noqa: F401
+from schemas.Links import ExternalLink  # noqa: F401
+from schemas.Projects import Project  # noqa: F401
+from schemas.Skills import Skill  # noqa: F401
 from schemas.User import User  # noqa: F401
 
 

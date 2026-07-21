@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from core.config import settings
 from core.csrf import get_or_create_csrf_token, set_csrf_cookie
 from core.database import run_database_migrations
-from routers import auth, user, experience, education
+from routers import auth, content, education, experience, user
 from seed import seed
 
 
@@ -69,3 +69,4 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(experience.router)
 app.include_router(education.router)
+app.include_router(content.router)
