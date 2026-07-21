@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Request, Form, Depends, HTTPException
+from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
+from core.config import settings
+from core.csrf import CSRF_COOKIE_NAME, validate_csrf_token
 from core.database import get_session
 from core.security import verify_password, create_access_token
+from core.validation import normalize_email
 from schemas.User import User
 
 router = APIRouter()
@@ -121,17 +124,32 @@ def login_page_alias(request: Request):
 # Login
 @router.post("/login")
 def login_user(
+    request: Request,
+    csrf_token: str = Form(""),
     mail: str = Form(...),
     password: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    user = session.exec(select(User).where(User.mail == mail)).first()
+    validate_csrf_token(request, csrf_token)
 
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    try:
+        normalized_mail = normalize_email(mail)
+    except ValueError:
+        normalized_mail = mail.strip().lower()
 
-    if not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    user = session.exec(select(User).where(User.mail == normalized_mail)).first()
+
+    if not user or not verify_password(password, user.hashed_password):
+        return templates.TemplateResponse(
+            request,
+            "login.html",
+            {
+                "request": request,
+                "error": "Invalid email or password.",
+                "mail": normalized_mail,
+            },
+            status_code=401,
+        )
 
     token = create_access_token(data={"sub": user.mail})
 
@@ -143,9 +161,10 @@ def login_user(
     response.set_cookie(
         key="access_token",
         value=token,
+        max_age=settings.access_token_expire_minutes * 60,
         httponly=True,
         samesite="lax",
-        secure=False,
+        secure=settings.cookie_secure_enabled,
         path="/",
     )
 
@@ -153,11 +172,22 @@ def login_user(
 
 
 # Logout
-@router.get("/logout")
-def logout():
+@router.post("/logout")
+def logout(request: Request, csrf_token: str = Form("")):
+    validate_csrf_token(request, csrf_token)
     response = RedirectResponse("/", status_code=303)
     response.delete_cookie(
         key="access_token",
         path="/",
+        secure=settings.cookie_secure_enabled,
+        httponly=True,
+        samesite="lax",
+    )
+    response.delete_cookie(
+        key=CSRF_COOKIE_NAME,
+        path="/",
+        secure=settings.cookie_secure_enabled,
+        httponly=True,
+        samesite="lax",
     )
     return response

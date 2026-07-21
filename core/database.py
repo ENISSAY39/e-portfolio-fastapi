@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy import URL
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, create_engine
 
 
 def get_database_url():
@@ -36,11 +36,6 @@ if str(database_url).startswith("sqlite"):
 engine = create_engine(database_url, **engine_options)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-
-
-def create_db_and_tables() -> None:
-    """Create tables for legacy callers; application startup uses Alembic."""
-    SQLModel.metadata.create_all(engine)
 
 
 def run_database_migrations() -> None:

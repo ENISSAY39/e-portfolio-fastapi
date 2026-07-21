@@ -14,24 +14,37 @@
     <div class="container">
         <h1>Add a user</h1>
 
+        {% if error %}
+        <p class="form-error" role="alert">{{ error }}</p>
+        {% endif %}
+
         <form action="/create_user" method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+
             <label>Name :</label>
-            <input type="text" name="name" required>
+            <input type="text" name="name" value="{{ form_data.get('name', '') }}" maxlength="100"
+                autocomplete="family-name" required>
 
             <label>First name :</label>
-            <input type="text" name="first_name" required>
+            <input type="text" name="first_name" value="{{ form_data.get('first_name', '') }}" maxlength="100"
+                autocomplete="given-name" required>
 
             <label>Date of birth :</label>
-            <input type="date" name="birth_date" required>
+            <input type="date" name="birth_date" value="{{ form_data.get('birth_date', '') }}" autocomplete="bday"
+                required>
 
             <label>Email :</label>
-            <input type="email" name="mail" required>
+            <input type="email" name="mail" value="{{ form_data.get('mail', '') }}" maxlength="320"
+                autocomplete="email" required>
 
-            <label>password :</label>
-            <input type="password" name="password" required>
+            <label>Password :</label>
+            <input type="password" name="password" minlength="10" maxlength="128" autocomplete="new-password"
+                aria-describedby="password-help" required>
+            <small id="password-help">At least 10 characters, with uppercase, lowercase and a number.</small>
 
             <label>Cell phone :</label>
-            <input type="tel" name="phone" required>
+            <input type="tel" name="phone" value="{{ form_data.get('phone', '') }}" maxlength="25" autocomplete="tel"
+                required>
 
             <button type="submit">Add</button>
         </form>

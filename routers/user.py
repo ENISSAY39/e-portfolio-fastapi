@@ -1,11 +1,21 @@
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 from datetime import date
 
+from core.authentication import get_authenticated_user
+from core.csrf import validate_csrf_token
 from core.database import get_session
-from core.security import hash_password, decode_access_token
+from core.security import hash_password
+from core.validation import (
+    clean_text,
+    normalize_email,
+    normalize_phone,
+    parse_birth_date,
+    validate_password,
+)
 
 from schemas.User import User
 from schemas.Experiences import Experience
@@ -63,13 +73,15 @@ def show_form(request: Request):
     return templates.TemplateResponse(
         request,
         "create_user.html",
-        {"request": request},
+        {"request": request, "form_data": {}},
     )
 
 
 # Create user
 @router.post("/create_user")
 def create_user(
+    request: Request,
+    csrf_token: str = Form(""),
     name: str = Form(...),
     first_name: str = Form(...),
     birth_date: str = Form(...),
@@ -78,21 +90,69 @@ def create_user(
     password: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    birth_date_obj = date.fromisoformat(birth_date)
+    validate_csrf_token(request, csrf_token)
+    form_data = {
+        "name": name,
+        "first_name": first_name,
+        "birth_date": birth_date,
+        "mail": mail,
+        "phone": phone,
+    }
+
+    try:
+        cleaned_name = clean_text(name, "Name", 100)
+        cleaned_first_name = clean_text(first_name, "First name", 100)
+        birth_date_obj = parse_birth_date(birth_date)
+        normalized_mail = normalize_email(mail)
+        normalized_phone = normalize_phone(phone)
+        validated_password = validate_password(password)
+    except ValueError as exc:
+        return templates.TemplateResponse(
+            request,
+            "create_user.html",
+            {"request": request, "error": str(exc), "form_data": form_data},
+            status_code=400,
+        )
+
+    existing_user = session.exec(
+        select(User).where(User.mail == normalized_mail)
+    ).first()
+    if existing_user:
+        return templates.TemplateResponse(
+            request,
+            "create_user.html",
+            {
+                "request": request,
+                "error": "An account already exists with this email address.",
+                "form_data": form_data,
+            },
+            status_code=409,
+        )
 
     user = User(
-        name=name,
-        first_name=first_name,
+        name=cleaned_name,
+        first_name=cleaned_first_name,
         birth_date=birth_date_obj,
-        mail=mail,
-        phone=phone,
-        hashed_password=hash_password(password),
+        mail=normalized_mail,
+        phone=normalized_phone,
+        hashed_password=hash_password(validated_password),
     )
 
-    print("DEBUG USER CREATED:", user)
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        return templates.TemplateResponse(
+            request,
+            "create_user.html",
+            {
+                "request": request,
+                "error": "An account already exists with this email address.",
+                "form_data": form_data,
+            },
+            status_code=409,
+        )
 
     return RedirectResponse("/login", status_code=303)
 
@@ -104,27 +164,7 @@ def show_profile(
     session: Session = Depends(get_session),
 ):
 
-    # Get JWT token from cookies
-    token = request.cookies.get("access_token")
-
-    if not token:
-        return RedirectResponse("/login", status_code=303)
-
-    # Decode token
-    payload = decode_access_token(token)
-
-    if not payload:
-        return RedirectResponse("/login", status_code=303)
-
-    # Get mail from token
-    mail = payload.get("sub")
-
-    if not mail:
-        return RedirectResponse("/login", status_code=303)
-
-    # Get user
-    user = session.exec(select(User).where(User.mail == mail)).first()
-
+    user = get_authenticated_user(request, session)
     if not user:
         return RedirectResponse("/login", status_code=303)
 

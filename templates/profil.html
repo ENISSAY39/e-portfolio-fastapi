@@ -15,7 +15,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h1>Welcome {{ first_name }} {{ name }}</h1>
 
-            <form action="/logout" method="get">
+            <form action="/logout" method="post">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                 <button type="submit">Logout</button>
             </form>
         </div>
@@ -51,6 +52,7 @@
 
                     <!-- Supprimer -->
                     <form action="/profil/experience/delete/{{ exp.id }}" method="post" style="margin: 0;">
+                        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                         <button type="submit" style="background-color: #dc3545;">Supprimer</button>
                     </form>
 
@@ -89,6 +91,7 @@
 
                     <!-- Supprimer -->
                     <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
+                        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                         <button type="submit" style="background-color: #dc3545;">Delete</button>
                     </form>
 
