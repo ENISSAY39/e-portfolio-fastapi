@@ -23,7 +23,7 @@ The platform provides both public and private features:
 * Portfolio search system
 * Portfolio pagination system
 
-The application follows a classic web architecture with a FastAPI backend, Jinja2 templates for rendering, and SQLite for data persistence.
+The application follows a classic web architecture with a FastAPI backend, Jinja2 templates for rendering, and PostgreSQL for data persistence in Docker. SQLite remains available as a fallback for local runs outside Docker.
 
 ---
 
@@ -34,7 +34,8 @@ The application follows a classic web architecture with a FastAPI backend, Jinja
 * Python 3.12
 * FastAPI
 * SQLModel
-* SQLite
+* PostgreSQL (Docker)
+* SQLite (local fallback)
 
 ### Security
 
@@ -276,6 +277,7 @@ This section explains the key dependencies and why they were chosen.
 |---|---|
 | `sqlmodel` | ORM chosen for its dual role: defines models used both as database tables and as Pydantic validation schemas, avoiding code duplication |
 | `sqlalchemy` | Underlying database engine used by SQLModel |
+| `psycopg` | PostgreSQL driver used by SQLAlchemy in Docker |
 | `greenlet` | Required by SQLAlchemy for async context support |
 
 ### Security
@@ -320,6 +322,27 @@ http://127.0.0.1:8000
 
 ## Docker Deployment
 
+Docker Compose starts three containers:
+
+* `eportfolio-app`: the FastAPI application, available on port `8000`.
+* `eportfolio-db`: PostgreSQL, available on port `5432` and persisted in the `postgres_data` Docker volume.
+* `eportfolio-pgadmin`: pgAdmin, available on port `5050` and persisted in the `pgadmin_data` Docker volume.
+
+Copy `.env.example` to `.env`, then replace `SECRET_KEY`, `POSTGRES_PASSWORD`, and `PGADMIN_DEFAULT_PASSWORD`. Docker Compose deliberately refuses to start when these required variables are absent. The real `.env` file is ignored by Git and must remain local to each developer or deployment server.
+
+Linux/macOS:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
 ### Build Image
 
 ```bash
@@ -337,6 +360,42 @@ docker compose up -d
 ```bash
 docker compose up -d --build
 ```
+
+### Check Services
+
+```bash
+docker compose ps
+docker compose logs -f
+```
+
+### Connect to PostgreSQL
+
+Use `localhost:5432` from a database client such as DBeaver or pgAdmin. The database name, user, password, and exposed port are configured in `.env`. PostgreSQL is bound to the host's loopback interface, so its port is not publicly exposed by the server.
+
+To open a SQL shell inside the database container:
+
+```bash
+docker compose exec db psql -U eportfolio -d eportfolio
+```
+
+`docker compose down` keeps the database. Use `docker compose down -v` only when you intentionally want to delete the PostgreSQL data volume.
+
+### Open pgAdmin
+
+Open `http://127.0.0.1:5050` and sign in with `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from `.env`.
+
+On the first connection, register the PostgreSQL server with these values:
+
+| Field | Value |
+|---|---|
+| Name | `ePortfolio` |
+| Host name/address | `db` |
+| Port | `5432` |
+| Maintenance database | value of `POSTGRES_DB` |
+| Username | value of `POSTGRES_USER` |
+| Password | value of `POSTGRES_PASSWORD` |
+
+Use `db`, not `localhost`, because pgAdmin connects to PostgreSQL through the internal Docker Compose network.
 
 ---
 
@@ -398,7 +457,8 @@ echo "DEPLOY DONE $(date)"
 
 ## Notes
 
-* The SQLite database is automatically created on startup.
+* PostgreSQL tables and idempotent demonstration data are automatically created on startup in Docker.
+* SQLite is automatically created only when the application is launched outside Docker without database environment variables.
 * Authentication relies on JWT tokens stored in HTTP-only cookies.
 * Passwords are hashed before storage using Argon2.
 * Pagination is implemented on the public homepage and search results.
