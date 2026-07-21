@@ -1,17 +1,19 @@
+/* Centre verticalement le titre et la carte de connexion dans une colonne. */
 body {
     font-family: Arial, sans-serif;
     background: #f4f6f8;
     display: flex;
     flex-direction: column;
-    /* correction */
+    /* Répartit le groupe principal autour du centre de la fenêtre. */
     justify-content: center;
     align-items: center;
     height: 100vh;
     gap: 20px;
-    /* espace entre le texte et le formulaire */
+    /* Évite que le contenu touche les bords par défaut du navigateur. */
     margin: 0;
 }
 
+/* Présente le formulaire sous la forme d'une carte compacte. */
 .login-container {
     background: white;
     padding: 30px;
@@ -21,16 +23,19 @@ body {
     text-align: center;
 }
 
+/* Colore le titre principal sans lui ajouter de marge extérieure. */
 h1 {
     margin: 0;
     color: #007BFF;
 }
 
+/* Sépare et colore le sous-titre du formulaire. */
 h2 {
     margin-bottom: 20px;
     color: #007BFF;
 }
 
+/* Étend les champs sur la largeur de la carte et uniformise leur bordure. */
 input {
     width: 100%;
     padding: 10px;
@@ -39,6 +44,7 @@ input {
     border-radius: 5px;
 }
 
+/* Définit l'action de connexion principale sur toute la largeur. */
 button {
     width: 100%;
     padding: 10px;
@@ -50,21 +56,25 @@ button {
     color: white;
 }
 
+/* Assombrit le bouton survolé pour confirmer son interactivité. */
 button:hover {
     background: #0056b3;
 }
 
+/* Positionne discrètement l'invitation à créer un compte. */
 .footer {
     text-align: center;
     margin-top: 10px;
     font-size: 12px;
 }
 
+/* Applique la couleur principale au lien d'inscription. */
 .footer a {
     color: #007BFF;
     text-decoration: none;
 }
 
+/* Souligne le lien d'inscription uniquement lors du survol. */
 .footer a:hover {
     text-decoration: underline;
 }

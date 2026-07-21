@@ -1,4 +1,4 @@
-/* Modern public profile CSS */
+/* Installe le fond et la typographie propres à la consultation d'un profil public. */
 body {
     background: #f4f6fb;
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -6,6 +6,7 @@ body {
     padding: 0;
 }
 
+/* Présente l'ensemble du profil dans une carte centrale à largeur limitée. */
 .profile-container {
     max-width: 700px;
     margin: 40px auto 40px auto;
@@ -15,6 +16,7 @@ body {
     padding: 48px 36px 36px 36px;
 }
 
+/* Donne une hiérarchie forte au nom complet du propriétaire. */
 .profile-header h1 {
     font-size: 2.7rem;
     font-weight: 800;
@@ -24,6 +26,7 @@ body {
     text-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
 }
 
+/* Regroupe les coordonnées dans un encart centré et légèrement contrasté. */
 .profile-header .profile-contact {
     display: flex;
     flex-direction: column;
@@ -41,21 +44,25 @@ body {
     margin-right: auto;
 }
 
+/* Accentue les libellés Email et Téléphone avec la couleur principale. */
 .profile-header .profile-contact strong {
     color: #2563eb;
     font-weight: 700;
 }
 
+/* Ajuste par cascade la couleur et la taille finales du texte des coordonnées. */
 .profile-header .profile-contact {
     color: #444;
     font-size: 1.08rem;
     margin-bottom: 0;
 }
 
+/* Sépare verticalement les grandes parties du parcours. */
 .profile-section {
     margin-bottom: 36px;
 }
 
+/* Met en avant le titre de chaque section du profil. */
 .profile-section h2 {
     color: #2563eb;
     font-size: 1.5rem;
@@ -63,12 +70,14 @@ body {
     font-weight: 600;
 }
 
+/* Supprime les puces natives afin d'afficher le parcours sous forme de cartes. */
 .profile-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
+/* Matérialise chaque expérience ou formation comme un bloc vertical. */
 .profile-list li {
     background: #f5f8ff;
     border-radius: 12px;
@@ -81,18 +90,22 @@ body {
     font-size: 1.08rem;
 }
 
+/* Accentue le poste ou l'établissement principal de chaque entrée. */
 .profile-list li strong {
     color: #2563eb;
     font-weight: 700;
     font-size: 1.13rem;
 }
 
+/* Rend la période secondaire par rapport au contenu descriptif. */
 .profile-list li small {
     color: #888;
     font-size: 0.98rem;
 }
 
+/* Réduit les marges internes du profil sur tablette et écran étroit. */
 @media (max-width: 800px) {
+    /* Conserve un léger espace latéral proportionnel à la largeur disponible. */
     .profile-container {
         padding: 18px 4vw;
     }

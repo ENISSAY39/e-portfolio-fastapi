@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <!-- Métadonnées et styles partagés des formulaires du profil. -->
     <meta charset="UTF-8">
     <title>Éducation</title>
     <link rel="stylesheet" href="/static/base.css">
@@ -9,10 +10,13 @@
 
 <body>
 
+    <!-- Carte principale utilisée aussi bien pour la création que pour l'édition. -->
     <div class="container">
 
+        {# Priorise les valeurs soumises afin de ne pas vider le formulaire après une erreur. #}
         {% set values = form_values or {} %}
 
+        {# La présence de `edu` détermine le mode édition ; son absence active le mode création. #}
         <h1>
             {% if edu %}
             Modify an education
@@ -21,20 +25,25 @@
             {% endif %}
         </h1>
 
+        {# État d'erreur de validation communiqué de manière accessible. #}
         {% if error %}
         <p class="form-error" role="alert">{{ error }}</p>
         {% endif %}
 
+        <!-- L'action cible la route d'édition avec l'identifiant ou la route de création. -->
         <form action="{% if edu %}/profil/education/edit/{{ edu.id }}{% else %}/profil/education{% endif %}"
             method="post">
+            {# Protection anti-CSRF obligatoire pour toute mutation du profil. #}
             <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
 
+            <!-- Établissement concerné par la formation. -->
             <label>School :</label>
             <input type="text" name="school_name"
                 value="{{ values.get('school_name', edu.school_name if edu else '') }}" maxlength="150" required>
 
 
+            <!-- Période de formation, formatée en ISO pour les champs HTML date. -->
             <label>Start date :</label>
             <input type="date" name="date_start"
                 value="{{ values.get('date_start', edu.date_start.strftime('%Y-%m-%d') if edu else '') }}" required>
@@ -43,6 +52,7 @@
             <input type="date" name="date_end"
                 value="{{ values.get('date_end', edu.date_end.strftime('%Y-%m-%d') if edu else '') }}" required>
 
+            <!-- Contenu de la formation et spécialité suivie. -->
             <label>Description :</label>
             <textarea name="description" rows="3" maxlength="3000"
                 required>{{ values.get('description', edu.description if edu else '') }}</textarea>
@@ -52,6 +62,7 @@
                 maxlength="150" required>
 
 
+            {# Libellé du bouton adapté au mode courant du formulaire. #}
             <button type="submit">
                 {% if edu %}Update{% else %}Add{% endif %}
             </button>
@@ -60,6 +71,7 @@
 
         <br>
 
+        <!-- Navigation de retour vers le tableau de bord privé. -->
         <a href="/profil">
             <button type="button">Back</button>
         </a>

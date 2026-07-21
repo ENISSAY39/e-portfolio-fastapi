@@ -1,14 +1,21 @@
+"""Normalize and validate untrusted values submitted through HTML forms."""
+
 import re
 from datetime import date, datetime
 
 from pydantic import EmailStr, TypeAdapter, ValidationError
 
 
+# Reuse Pydantic's well-tested email parser instead of maintaining an incomplete
+# email regular expression locally.
 EMAIL_ADAPTER = TypeAdapter(EmailStr)
+# The first pass accepts common human formatting; a second pass below enforces
+# the number of digits after punctuation and spaces are removed.
 PHONE_ALLOWED_PATTERN = re.compile(r"^\+?[0-9 .()\-]{8,25}$")
 
 
 def clean_text(value: str, label: str, max_length: int) -> str:
+    """Trim required text and enforce the field-specific storage limit."""
     cleaned = value.strip()
     if not cleaned:
         raise ValueError(f"{label} is required.")
@@ -18,6 +25,7 @@ def clean_text(value: str, label: str, max_length: int) -> str:
 
 
 def normalize_email(value: str) -> str:
+    """Return a validated lowercase email for consistent unique lookups."""
     normalized = value.strip().lower()
     try:
         return str(EMAIL_ADAPTER.validate_python(normalized))
@@ -26,6 +34,9 @@ def normalize_email(value: str) -> str:
 
 
 def validate_password(value: str) -> str:
+    """Enforce the application's length and character-class password policy."""
+    # Validate the original value: silently trimming a password would change the
+    # credential the user intentionally entered.
     if len(value) < 10:
         raise ValueError("Password must contain at least 10 characters.")
     if len(value) > 128:
@@ -40,10 +51,13 @@ def validate_password(value: str) -> str:
 
 
 def normalize_phone(value: str) -> str:
+    """Validate a phone number and store a punctuation-free representation."""
     raw_phone = value.strip()
     if not PHONE_ALLOWED_PATTERN.fullmatch(raw_phone):
         raise ValueError("Please enter a valid phone number.")
 
+    # Preserve only whether the user supplied an international prefix; all
+    # display punctuation is removed to keep storage and comparisons consistent.
     has_international_prefix = raw_phone.startswith("+")
     digits = re.sub(r"\D", "", raw_phone)
     if not 8 <= len(digits) <= 15:
@@ -52,6 +66,7 @@ def normalize_phone(value: str) -> str:
 
 
 def parse_birth_date(value: str) -> date:
+    """Parse an ISO birth date and reject future or implausibly old values."""
     try:
         birth_date = date.fromisoformat(value)
     except ValueError as exc:
@@ -66,6 +81,7 @@ def parse_birth_date(value: str) -> date:
 
 
 def parse_date_range(date_start: str, date_end: str) -> tuple[datetime, datetime]:
+    """Parse an HTML date pair and enforce chronological ordering."""
     try:
         start = datetime.strptime(date_start, "%Y-%m-%d")
         end = datetime.strptime(date_end, "%Y-%m-%d")

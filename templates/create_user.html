@@ -2,8 +2,10 @@
 <html lang="fr">
 
 <head>
+    <!-- Styles dédiés à la carte et au formulaire d'inscription. -->
     <link rel="stylesheet" href="/static/create_user.css">
 
+    <!-- Métadonnées de la page de création de compte. -->
     <meta charset="UTF-8">
     <title>Add a user</title>
 
@@ -11,16 +13,21 @@
 
 <body>
 
+    <!-- Conteneur principal centré de la page d'inscription. -->
     <div class="container">
         <h1>Add a user</h1>
 
+        {# Affiche le message renvoyé par le serveur lorsqu'une validation échoue. #}
         {% if error %}
         <p class="form-error" role="alert">{{ error }}</p>
         {% endif %}
 
+        <!-- Formulaire de création d'un utilisateur envoyé à la route d'inscription. -->
         <form action="/create_user" method="post">
+            {# Jeton anti-CSRF associé à la session courante et vérifié côté serveur. #}
             <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
+            <!-- Identité civile ; les valeurs valides sont restaurées après une erreur. -->
             <label>Name :</label>
             <input type="text" name="name" value="{{ form_data.get('name', '') }}" maxlength="100"
                 autocomplete="family-name" required>
@@ -29,23 +36,29 @@
             <input type="text" name="first_name" value="{{ form_data.get('first_name', '') }}" maxlength="100"
                 autocomplete="given-name" required>
 
+            <!-- Date de naissance au format natif attendu par le champ HTML date. -->
             <label>Date of birth :</label>
             <input type="date" name="birth_date" value="{{ form_data.get('birth_date', '') }}" autocomplete="bday"
                 required>
 
+            <!-- Adresse utilisée comme identifiant de connexion. -->
             <label>Email :</label>
             <input type="email" name="mail" value="{{ form_data.get('mail', '') }}" maxlength="320"
                 autocomplete="email" required>
 
+            <!-- Le mot de passe n'est jamais réinjecté dans la page après une erreur. -->
             <label>Password :</label>
             <input type="password" name="password" minlength="10" maxlength="128" autocomplete="new-password"
                 aria-describedby="password-help" required>
+            <!-- Aide accessible reliée au champ par aria-describedby. -->
             <small id="password-help">At least 10 characters, with uppercase, lowercase and a number.</small>
 
+            <!-- Numéro de téléphone restauré si le serveur refuse un autre champ. -->
             <label>Cell phone :</label>
             <input type="tel" name="phone" value="{{ form_data.get('phone', '') }}" maxlength="25" autocomplete="tel"
                 required>
 
+            <!-- Soumission finale du formulaire d'inscription. -->
             <button type="submit">Add</button>
         </form>
     </div>

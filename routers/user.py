@@ -1,3 +1,5 @@
+"""Routes de création de compte et d'affichage des profils privés ou publics."""
+
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -21,40 +23,51 @@ from schemas.User import User
 from schemas.Experiences import Experience
 from schemas.Education import Education
 
+# Ce routeur regroupe les opérations centrées sur un utilisateur et son portfolio.
 router = APIRouter()
+
+# Les pages de compte sont rendues côté serveur depuis le dossier templates/.
 templates = Jinja2Templates(directory="templates")
 
 
 def calculate_age(birth_date: date) -> int:
-    """Calcule l'âge à partir de la date de naissance"""
+    """Calcule l'âge révolu à la date du jour depuis une date de naissance."""
+
     today_date = date.today()
     age = today_date.year - birth_date.year
-    # Soustraire 1 si l'anniversaire n'est pas encore passé cette année
+
+    # L'écart d'années doit être réduit si l'anniversaire n'est pas encore passé cette année.
     if (today_date.month, today_date.day) < (birth_date.month, birth_date.day):
         age -= 1
     return age
 
 
-# profil public d'un utilisateur (affiché à tous les utilisateurs, même non connectés)
 @router.get("/portfolio/{user_id}", response_class=HTMLResponse)
 def public_portfolio(
     request: Request,
     user_id: int,
     session: Session = Depends(get_session),
 ):
+    """Affiche le portfolio public identifié par son identifiant utilisateur."""
+
+    # La clé primaire de l'URL permet un accès direct sans authentification.
     user = session.get(User, user_id)
 
+    # Un identifiant inconnu ne doit pas être transmis au template de profil.
     if not user:
         return RedirectResponse("/login", status_code=303)
 
+    # Les expériences affichées appartiennent exclusivement au compte demandé.
     experiences = session.exec(
         select(Experience).where(Experience.user_id == user.id)
     ).all()
 
+    # Les formations sont chargées séparément avec le même filtre de propriétaire.
     educations = session.exec(
         select(Education).where(Education.user_id == user.id)
     ).all()
 
+    # Le template public reçoit l'utilisateur et les deux collections de son portfolio.
     return templates.TemplateResponse(
         request,
         "public_profile.html",
@@ -67,9 +80,11 @@ def public_portfolio(
     )
 
 
-# Form create user
 @router.get("/create_user", response_class=HTMLResponse)
 def show_form(request: Request):
+    """Affiche un formulaire d'inscription vide."""
+
+    # form_data permet au même template d'afficher un formulaire vide ou de restaurer une saisie.
     return templates.TemplateResponse(
         request,
         "create_user.html",
@@ -77,7 +92,6 @@ def show_form(request: Request):
     )
 
 
-# Create user
 @router.post("/create_user")
 def create_user(
     request: Request,
@@ -90,7 +104,13 @@ def create_user(
     password: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    """Valide une inscription, crée le compte et redirige vers la connexion."""
+
+    # Le jeton lié au navigateur est vérifié avant de traiter les données du formulaire.
     validate_csrf_token(request, csrf_token)
+
+    # Les champs non sensibles sont conservés pour réafficher la saisie après une erreur.
+    # Le mot de passe est volontairement exclu afin de ne jamais le renvoyer au template.
     form_data = {
         "name": name,
         "first_name": first_name,
@@ -99,6 +119,7 @@ def create_user(
         "phone": phone,
     }
 
+    # Chaque valeur est nettoyée et validée avant la construction de l'objet SQLModel.
     try:
         cleaned_name = clean_text(name, "Name", 100)
         cleaned_first_name = clean_text(first_name, "First name", 100)
@@ -107,6 +128,7 @@ def create_user(
         normalized_phone = normalize_phone(phone)
         validated_password = validate_password(password)
     except ValueError as exc:
+        # Les erreurs attendues de validation sont présentées avec un statut client 400.
         return templates.TemplateResponse(
             request,
             "create_user.html",
@@ -114,6 +136,7 @@ def create_user(
             status_code=400,
         )
 
+    # Ce contrôle fournit une erreur lisible avant de tenter l'insertion en base.
     existing_user = session.exec(
         select(User).where(User.mail == normalized_mail)
     ).first()
@@ -129,6 +152,7 @@ def create_user(
             status_code=409,
         )
 
+    # Seul le condensat du mot de passe validé est enregistré ; le mot de passe brut est écarté.
     user = User(
         name=cleaned_name,
         first_name=cleaned_first_name,
@@ -138,10 +162,13 @@ def create_user(
         hashed_password=hash_password(validated_password),
     )
 
+    # L'ajout reste en attente dans la session jusqu'à la transaction commitée ci-dessous.
     session.add(user)
     try:
         session.commit()
     except IntegrityError:
+        # La contrainte unique protège aussi contre deux inscriptions concurrentes.
+        # Un rollback est obligatoire avant de pouvoir réutiliser cette session SQLAlchemy.
         session.rollback()
         return templates.TemplateResponse(
             request,
@@ -154,30 +181,34 @@ def create_user(
             status_code=409,
         )
 
+    # Post/Redirect/Get évite de recréer le compte si la page est actualisée.
     return RedirectResponse("/login", status_code=303)
 
 
-# Profil
 @router.get("/profil", response_class=HTMLResponse)
 def show_profile(
     request: Request,
     session: Session = Depends(get_session),
 ):
+    """Affiche le tableau de bord privé du compte authentifié."""
 
+    # Le cookie JWT est décodé puis son sujet est résolu en utilisateur par le helper partagé.
     user = get_authenticated_user(request, session)
     if not user:
+        # Un cookie absent, invalide, expiré ou associé à aucun compte ramène à la connexion.
         return RedirectResponse("/login", status_code=303)
 
-    # Get experiences
+    # L'identifiant issu du compte authentifié borne la lecture à ses propres expériences.
     experiences = session.exec(
         select(Experience).where(Experience.user_id == user.id)
     ).all()
 
-    # Get educations
+    # Les formations sont filtrées avec la même règle de propriété.
     educations = session.exec(
         select(Education).where(Education.user_id == user.id)
     ).all()
 
+    # Le template privé reçoit uniquement les informations du compte résolu par le JWT.
     response = templates.TemplateResponse(
         request,
         "profil.html",
@@ -193,7 +224,7 @@ def show_profile(
         },
     )
 
-    # Prevent browser cache after logout
+    # Le profil privé ne doit pas rester visible via l'historique après une déconnexion.
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"

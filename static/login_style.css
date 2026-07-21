@@ -1,3 +1,4 @@
+/* Organise la page de connexion en colonne centrée sur un fond gris clair. */
 body {
     margin: 0;
     background-color: #e5e7eb;
@@ -8,7 +9,7 @@ body {
     align-items: center;
 }
 
-/* HEADER */
+/* Construit un bandeau bleu qui couvre toute la largeur visible de l'écran. */
 .header {
     width: 100vw;
     min-height: 180px;
@@ -18,7 +19,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* Pour couvrir toute la largeur de l'écran sans espace */
+    /* Compense le centrage du parent pour retrouver les bords exacts de la fenêtre. */
     position: relative;
     left: 50%;
     right: 50%;
@@ -28,17 +29,20 @@ body {
     color: white;
 }
 
+/* Met en avant le nom du service dans le bandeau. */
 .header h1 {
     margin: 0;
     font-size: 32px;
     color: white;
 }
 
+/* Aligne les actions disponibles dans l'en-tête. */
 .header-buttons {
     display: flex;
     gap: 12px;
 }
 
+/* Présente l'action d'accueil comme un bouton blanc contrasté. */
 .header-buttons a button {
     background-color: white;
     color: #2563eb;
@@ -51,11 +55,12 @@ body {
     transition: 0.2s;
 }
 
+/* Atténue légèrement le bouton d'en-tête lors du survol. */
 .header-buttons a button:hover {
     opacity: 0.85;
 }
 
-/* MAIN TITLE */
+/* Style prévu pour un éventuel grand titre placé entre l'en-tête et la carte. */
 .main-title {
     color: #2563eb;
     margin-top: 40px;
@@ -63,7 +68,7 @@ body {
     font-size: 48px;
 }
 
-/* LOGIN CARD */
+/* Matérialise le formulaire de connexion dans une carte verticale centrée. */
 .login-container {
     background-color: white;
 
@@ -81,12 +86,14 @@ body {
     align-items: center;
 }
 
+/* Hiérarchise le titre de la carte avec la couleur principale. */
 .login-container h2 {
     color: #2563eb;
     margin-bottom: 30px;
     font-size: 36px;
 }
 
+/* Empile les champs et le bouton avec un espacement régulier. */
 .login-container form {
     width: 100%;
 
@@ -95,6 +102,7 @@ body {
     gap: 18px;
 }
 
+/* Rend les champs confortables et cohérents avec les angles de la carte. */
 .login-container input {
     padding: 14px;
     border: 1px solid #ccc;
@@ -103,6 +111,7 @@ body {
     font-size: 16px;
 }
 
+/* Transforme la soumission en action principale pleine largeur. */
 .login-container button {
     background-color: #2563eb;
     color: white;
@@ -120,25 +129,30 @@ body {
     transition: 0.2s;
 }
 
+/* Fournit un retour visuel lorsque l'action de connexion est survolée. */
 .login-container button:hover {
     opacity: 0.9;
 }
 
+/* Éloigne et dimensionne l'invitation à créer un compte. */
 .footer {
     margin-top: 161px;
     font-size: 14px;
 }
 
+/* Met en évidence le lien d'inscription avec la couleur du thème. */
 .footer a {
     color: #2563eb;
     text-decoration: none;
     font-weight: bold;
 }
 
+/* Souligne le lien d'inscription lors du survol. */
 .footer a:hover {
     text-decoration: underline;
 }
 
+/* Affiche les erreurs d'authentification dans un encart rouge clair. */
 .form-error {
     margin: 0 0 18px;
     padding: 10px;

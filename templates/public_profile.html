@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <!-- Métadonnées et combinaison des styles globaux et spécifiques au profil public. -->
     <meta charset="UTF-8">
     <title>Portfolio</title>
     <link rel="stylesheet" href="/static/base.css">
@@ -9,17 +10,19 @@
 </head>
 
 <body>
-    <!-- HEADER -->
-
+    <!-- En-tête public proposant un retour à l'annuaire des portfolios. -->
     <div class="header">
         <h1>Welcome to Public e-Portfolios</h1>
+        <!-- Action de navigation sans soumission de formulaire. -->
         <div class="header-buttons">
             <a href="/">
                 <button type="button">Home</button>
             </a>
         </div>
     </div>
+    <!-- Carte contenant l'identité, les coordonnées et le parcours public. -->
     <div class="profile-container">
+        <!-- Identité et coordonnées issues de l'utilisateur sélectionné. -->
         <div class="profile-header">
             <h1>{{ user.first_name }} {{ user.name }}</h1>
             <div class="profile-contact">
@@ -28,30 +31,38 @@
             </div>
         </div>
 
+        <!-- Section des expériences professionnelles. -->
         <div class="profile-section">
             <h2>Experiences</h2>
             <ul class="profile-list">
+                {# Rend chaque expérience ; le bloc `else` couvre explicitement la collection vide. #}
                 {% for exp in experiences %}
                 <li>
+                    <!-- Intitulé, entreprise, période puis description de l'expérience. -->
                     <div><strong>{{ exp.title }}</strong> - {{ exp.company }}</div>
                     <small>{{ exp.date_start }} → {{ exp.date_end }}</small>
                     <div>{{ exp.description }}</div>
                 </li>
+                {# État vide affiché lorsque l'utilisateur n'a encore publié aucune expérience. #}
                 {% else %}
                 <li>No experiences.</li>
                 {% endfor %}
             </ul>
         </div>
 
+        <!-- Section du parcours scolaire et universitaire. -->
         <div class="profile-section">
             <h2>Educations</h2>
             <ul class="profile-list">
+                {# Rend chaque formation ; le bloc `else` couvre explicitement la collection vide. #}
                 {% for edu in educations %}
                 <li>
+                    <!-- Établissement, spécialité, période puis description de la formation. -->
                     <div><strong>{{ edu.school_name }}</strong> - {{ edu.major }}</div>
                     <small>{{ edu.date_start }} → {{ edu.date_end }}</small>
                     <div>{{ edu.description }}</div>
                 </li>
+                {# État vide affiché lorsque l'utilisateur n'a encore publié aucune formation. #}
                 {% else %}
                 <li>No educations.</li>
                 {% endfor %}

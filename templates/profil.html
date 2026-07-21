@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <!-- Métadonnées et styles globaux du tableau de bord privé. -->
     <meta charset="UTF-8">
     <title>Profil utilisateur</title>
     <link rel="stylesheet" href="/static/base.css">
@@ -9,19 +10,22 @@
 
 <body>
 
+    <!-- Conteneur de toutes les informations et actions du propriétaire connecté. -->
     <div class="container">
 
-        <!-- Header -->
+        <!-- En-tête du profil : identité résumée et déconnexion sécurisée. -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h1>Welcome {{ first_name }} {{ name }}</h1>
 
+            <!-- La déconnexion est une mutation POST protégée contre les requêtes intersites. -->
             <form action="/logout" method="post">
+                {# Jeton anti-CSRF produit pour la session authentifiée courante. #}
                 <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                 <button type="submit">Logout</button>
             </form>
         </div>
 
-        <!-- Infos utilisateur -->
+        <!-- Informations personnelles calculées ou chargées par la route du profil. -->
         <div>
             <p><strong>Name :</strong> {{ name }}</p>
             <p><strong>First name :</strong> {{ first_name }}</p>
@@ -32,32 +36,36 @@
 
         <hr>
 
-        <!-- Expériences -->
+        <!-- Expériences professionnelles appartenant à l'utilisateur connecté. -->
         <h2>My Experiences</h2>
 
         <ul>
+            {# Une entrée et ses actions d'administration sont rendues pour chaque expérience possédée. #}
             {% for exp in experiences %}
             <li>
+                <!-- Résumé de l'expérience : poste, entreprise, dates et description. -->
                 <strong>{{ exp.title }}</strong> - {{ exp.company }}<br>
                 <small>{{ exp.date_start }} → {{ exp.date_end }}</small><br>
                 {{ exp.description }}
 
-                <!-- ACTIONS -->
+                <!-- Actions disponibles sur cette expérience précise. -->
                 <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
 
-                    <!-- Modifier -->
+                    <!-- Navigation vers le formulaire d'édition de l'expérience. -->
                     <a href="/profil/experience/edit/{{ exp.id }}">
                         <button type="button">Modifier</button>
                     </a>
 
-                    <!-- Supprimer -->
+                    <!-- Suppression POST protégée ; le serveur revérifie aussi le propriétaire. -->
                     <form action="/profil/experience/delete/{{ exp.id }}" method="post" style="margin: 0;">
+                        {# Jeton propre à la session pour autoriser la mutation destructive. #}
                         <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                         <button type="submit" style="background-color: #dc3545;">Supprimer</button>
                     </form>
 
                 </div>
             </li>
+            {# État vide lorsque le profil ne contient encore aucune expérience. #}
             {% else %}
             <li>No experience available at the moment.</li>
             {% endfor %}
@@ -65,44 +73,48 @@
 
         <hr>
 
-        <!-- Ajouter -->
+        <!-- Navigation vers le formulaire de création d'une expérience. -->
         <a href="/profil/experience">
             <button type="button">Add an experience</button>
         </a>
 
-        <!-- Education -->
+        <!-- Formations appartenant à l'utilisateur connecté. -->
         <hr>
         <h2>My Education</h2>
 
         <ul>
+            {# Une entrée et ses actions d'administration sont rendues pour chaque formation possédée. #}
             {% for edu in educations %}
             <li>
+                <!-- Résumé de la formation : école, spécialité, dates et description. -->
                 <strong>{{ edu.school_name }}</strong> - {{ edu.major }}<br>
                 <small>{{ edu.date_start }} → {{ edu.date_end }}</small><br>
                 {{ edu.description }}
 
-                <!-- ACTIONS -->
+                <!-- Actions disponibles sur cette formation précise. -->
                 <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
 
-                    <!-- Modifier -->
+                    <!-- Navigation vers le formulaire d'édition de la formation. -->
                     <a href="/profil/education/edit/{{ edu.id }}">
                         <button type="button">Modify</button>
                     </a>
 
-                    <!-- Supprimer -->
+                    <!-- Suppression POST protégée ; le serveur revérifie aussi le propriétaire. -->
                     <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
+                        {# Jeton propre à la session pour autoriser la mutation destructive. #}
                         <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
                         <button type="submit" style="background-color: #dc3545;">Delete</button>
                     </form>
 
                 </div>
             </li>
+            {# État vide lorsque le profil ne contient encore aucune formation. #}
             {% else %}
             <li>No education available at the moment.</li>
             {% endfor %}
         </ul>
 
-        <!-- Ajouter -->
+        <!-- Navigation vers le formulaire de création d'une formation. -->
         <a href="/profil/education">
             <button type="button">Add an education</button>
         </a>
