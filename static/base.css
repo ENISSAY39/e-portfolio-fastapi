@@ -96,3 +96,12 @@ hr {
     border: none;
     border-top: 1px solid #ddd;
 }
+
+.form-error {
+    margin: 12px 0;
+    padding: 10px 12px;
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    background: #fff1f2;
+    color: #b42318;
+}

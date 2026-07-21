@@ -11,6 +11,8 @@
 
     <div class="container">
 
+        {% set values = form_values or {} %}
+
         <h1>
             {% if edu %}
             Modify an education
@@ -19,26 +21,35 @@
             {% endif %}
         </h1>
 
+        {% if error %}
+        <p class="form-error" role="alert">{{ error }}</p>
+        {% endif %}
+
         <form action="{% if edu %}/profil/education/edit/{{ edu.id }}{% else %}/profil/education{% endif %}"
             method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
 
             <label>School :</label>
-            <input type="text" name="school_name" value="{{ edu.school_name if edu else '' }}" required>
+            <input type="text" name="school_name"
+                value="{{ values.get('school_name', edu.school_name if edu else '') }}" maxlength="150" required>
 
 
             <label>Start date :</label>
-            <input type="date" name="date_start" value="{{ edu.date_start.strftime('%Y-%m-%d') if edu else '' }}"
-                required>
+            <input type="date" name="date_start"
+                value="{{ values.get('date_start', edu.date_start.strftime('%Y-%m-%d') if edu else '') }}" required>
 
             <label>End date :</label>
-            <input type="date" name="date_end" value="{{ edu.date_end.strftime('%Y-%m-%d') if edu else '' }}" required>
+            <input type="date" name="date_end"
+                value="{{ values.get('date_end', edu.date_end.strftime('%Y-%m-%d') if edu else '') }}" required>
 
             <label>Description :</label>
-            <textarea name="description" rows="3" required>{{ edu.description if edu else '' }}</textarea>
+            <textarea name="description" rows="3" maxlength="3000"
+                required>{{ values.get('description', edu.description if edu else '') }}</textarea>
 
             <label>Major :</label>
-            <input type="text" name="major" value="{{ edu.major if edu else '' }}" required>
+            <input type="text" name="major" value="{{ values.get('major', edu.major if edu else '') }}"
+                maxlength="150" required>
 
 
             <button type="submit">

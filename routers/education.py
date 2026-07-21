@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session, select
-from datetime import datetime
+from sqlmodel import Session
 
+from core.authentication import get_authenticated_user
+from core.csrf import validate_csrf_token
 from core.database import get_session
-from core.security import decode_access_token
+from core.validation import clean_text, parse_date_range
 from schemas.Education import Education
-from schemas.User import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -15,18 +15,18 @@ templates = Jinja2Templates(directory="templates")
 
 # FORM CREATE
 @router.get("/profil/education", response_class=HTMLResponse)
-def show_form(request: Request):
-    token = request.cookies.get("access_token")
-    payload = decode_access_token(token)
-    if not payload:
+def show_form(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    user = get_authenticated_user(request, session)
+    if not user:
         return RedirectResponse("/login", status_code=303)
-
-    mail = payload.get("sub")
 
     return templates.TemplateResponse(
         request,
         "education.html",
-        {"request": request, "edu": None, "mail": mail},
+        {"request": request, "edu": None, "form_values": {}},
     )
 
 
@@ -34,6 +34,7 @@ def show_form(request: Request):
 @router.post("/profil/education")
 def create_education(
     request: Request,
+    csrf_token: str = Form(""),
     school_name: str = Form(...),
     date_start: str = Form(...),
     date_end: str = Form(...),
@@ -41,23 +42,42 @@ def create_education(
     major: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    token = request.cookies.get("access_token")
-    payload = decode_access_token(token)
-    if not payload:
+    user = get_authenticated_user(request, session)
+    if not user:
         return RedirectResponse("/login", status_code=303)
 
-    mail = payload.get("sub")
-    user = session.exec(select(User).where(User.mail == mail)).first()
-
-    if not user:
-        return RedirectResponse("/", status_code=303)
+    validate_csrf_token(request, csrf_token)
+    form_values = {
+        "school_name": school_name,
+        "date_start": date_start,
+        "date_end": date_end,
+        "description": description,
+        "major": major,
+    }
+    try:
+        cleaned_school_name = clean_text(school_name, "School", 150)
+        cleaned_description = clean_text(description, "Description", 3000)
+        cleaned_major = clean_text(major, "Major", 150)
+        parsed_start, parsed_end = parse_date_range(date_start, date_end)
+    except ValueError as exc:
+        return templates.TemplateResponse(
+            request,
+            "education.html",
+            {
+                "request": request,
+                "edu": None,
+                "error": str(exc),
+                "form_values": form_values,
+            },
+            status_code=400,
+        )
 
     education = Education(
-        school_name=school_name,
-        date_start=datetime.strptime(date_start, "%Y-%m-%d"),
-        date_end=datetime.strptime(date_end, "%Y-%m-%d"),
-        description=description,
-        major=major,
+        school_name=cleaned_school_name,
+        date_start=parsed_start,
+        date_end=parsed_end,
+        description=cleaned_description,
+        major=cleaned_major,
         user_id=user.id,
     )
 
@@ -72,15 +92,14 @@ def create_education(
 def delete_education(
     request: Request,
     edu_id: int,
+    csrf_token: str = Form(""),
     session: Session = Depends(get_session),
 ):
-    token = request.cookies.get("access_token")
-    payload = decode_access_token(token)
-    if not payload:
+    user = get_authenticated_user(request, session)
+    if not user:
         return RedirectResponse("/login", status_code=303)
 
-    mail = payload.get("sub")
-    user = session.exec(select(User).where(User.mail == mail)).first()
+    validate_csrf_token(request, csrf_token)
     edu = session.get(Education, edu_id)
 
     if edu and user and edu.user_id == user.id:
@@ -97,13 +116,10 @@ def edit_education_form(
     edu_id: int,
     session: Session = Depends(get_session),
 ):
-    token = request.cookies.get("access_token")
-    payload = decode_access_token(token)
-    if not payload:
+    user = get_authenticated_user(request, session)
+    if not user:
         return RedirectResponse("/login", status_code=303)
 
-    mail = payload.get("sub")
-    user = session.exec(select(User).where(User.mail == mail)).first()
     edu = session.get(Education, edu_id)
 
     if not edu or not user or edu.user_id != user.id:
@@ -112,7 +128,7 @@ def edit_education_form(
     return templates.TemplateResponse(
         request,
         "education.html",
-        {"request": request, "edu": edu, "mail": mail},
+        {"request": request, "edu": edu, "form_values": {}},
     )
 
 
@@ -121,6 +137,7 @@ def edit_education_form(
 def update_education(
     request: Request,
     edu_id: int,
+    csrf_token: str = Form(""),
     school_name: str = Form(...),
     date_start: str = Form(...),
     date_end: str = Form(...),
@@ -128,22 +145,46 @@ def update_education(
     major: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    token = request.cookies.get("access_token")
-    payload = decode_access_token(token)
-    if not payload:
+    user = get_authenticated_user(request, session)
+    if not user:
         return RedirectResponse("/login", status_code=303)
 
-    mail = payload.get("sub")
-    user = session.exec(select(User).where(User.mail == mail)).first()
+    validate_csrf_token(request, csrf_token)
     edu = session.get(Education, edu_id)
 
-    if edu and user and edu.user_id == user.id:
-        edu.school_name = school_name
-        edu.date_start = datetime.strptime(date_start, "%Y-%m-%d")
-        edu.date_end = datetime.strptime(date_end, "%Y-%m-%d")
-        edu.description = description
-        edu.major = major
+    if not edu or edu.user_id != user.id:
+        return RedirectResponse("/profil", status_code=303)
 
-        session.commit()
+    form_values = {
+        "school_name": school_name,
+        "date_start": date_start,
+        "date_end": date_end,
+        "description": description,
+        "major": major,
+    }
+    try:
+        cleaned_school_name = clean_text(school_name, "School", 150)
+        cleaned_description = clean_text(description, "Description", 3000)
+        cleaned_major = clean_text(major, "Major", 150)
+        parsed_start, parsed_end = parse_date_range(date_start, date_end)
+    except ValueError as exc:
+        return templates.TemplateResponse(
+            request,
+            "education.html",
+            {
+                "request": request,
+                "edu": edu,
+                "error": str(exc),
+                "form_values": form_values,
+            },
+            status_code=400,
+        )
+
+    edu.school_name = cleaned_school_name
+    edu.date_start = parsed_start
+    edu.date_end = parsed_end
+    edu.description = cleaned_description
+    edu.major = cleaned_major
+    session.commit()
 
     return RedirectResponse("/profil", status_code=303)

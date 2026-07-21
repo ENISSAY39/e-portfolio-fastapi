@@ -11,6 +11,8 @@
 
     <div class="container">
 
+        {% set values = form_values or {} %}
+
         <h1>
             {% if exp %}
             Modify an experience
@@ -19,24 +21,33 @@
             {% endif %}
         </h1>
 
+        {% if error %}
+        <p class="form-error" role="alert">{{ error }}</p>
+        {% endif %}
+
         <form action="{% if exp %}/profil/experience/edit/{{ exp.id }}{% else %}/profil/experience{% endif %}"
             method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
             <label>Titre :</label>
-            <input type="text" name="title" value="{{ exp.title if exp else '' }}" required>
+            <input type="text" name="title" value="{{ values.get('title', exp.title if exp else '') }}"
+                maxlength="150" required>
 
             <label>Start date :</label>
-            <input type="date" name="date_start" value="{{ exp.date_start.strftime('%Y-%m-%d') if exp else '' }}"
-                required>
+            <input type="date" name="date_start"
+                value="{{ values.get('date_start', exp.date_start.strftime('%Y-%m-%d') if exp else '') }}" required>
 
             <label>End date :</label>
-            <input type="date" name="date_end" value="{{ exp.date_end.strftime('%Y-%m-%d') if exp else '' }}" required>
+            <input type="date" name="date_end"
+                value="{{ values.get('date_end', exp.date_end.strftime('%Y-%m-%d') if exp else '') }}" required>
 
             <label>Description :</label>
-            <textarea name="description" rows="3" required>{{ exp.description if exp else '' }}</textarea>
+            <textarea name="description" rows="3" maxlength="3000"
+                required>{{ values.get('description', exp.description if exp else '') }}</textarea>
 
             <label>Entreprise :</label>
-            <input type="text" name="company" value="{{ exp.company if exp else '' }}" required>
+            <input type="text" name="company" value="{{ values.get('company', exp.company if exp else '') }}"
+                maxlength="150" required>
 
             <button type="submit">
                 {% if exp %}Update{% else %}Add{% endif %}
