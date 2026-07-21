@@ -277,6 +277,7 @@ This section explains the key dependencies and why they were chosen.
 |---|---|
 | `sqlmodel` | ORM chosen for its dual role: defines models used both as database tables and as Pydantic validation schemas, avoiding code duplication |
 | `sqlalchemy` | Underlying database engine used by SQLModel |
+| `alembic` | Applies versioned and reproducible database schema migrations |
 | `psycopg` | PostgreSQL driver used by SQLAlchemy in Docker |
 | `greenlet` | Required by SQLAlchemy for async context support |
 
@@ -328,7 +329,7 @@ Docker Compose starts three containers:
 * `eportfolio-db`: PostgreSQL, available on port `5432` and persisted in the `postgres_data` Docker volume.
 * `eportfolio-pgadmin`: pgAdmin, available on port `5050` and persisted in the `pgadmin_data` Docker volume.
 
-Copy `.env.example` to `.env`, then replace `SECRET_KEY`, `POSTGRES_PASSWORD`, and `PGADMIN_DEFAULT_PASSWORD`. Docker Compose deliberately refuses to start when these required variables are absent. The real `.env` file is ignored by Git and must remain local to each developer or deployment server.
+Copy `.env.example` to `.env`, then replace `SECRET_KEY`, `POSTGRES_PASSWORD`, and `PGADMIN_DEFAULT_PASSWORD`. `SECRET_KEY` must contain at least 32 characters and cannot keep the example placeholder. Docker Compose deliberately refuses to start when required variables are absent. The real `.env` file is ignored by Git and must remain local to each developer or deployment server.
 
 Linux/macOS:
 
@@ -342,6 +343,16 @@ Windows PowerShell:
 ```powershell
 Copy-Item .env.example .env
 ```
+
+For production, use the following security settings:
+
+```dotenv
+APP_ENV=production
+COOKIE_SECURE=true
+SEED_DEMO_DATA=false
+```
+
+`COOKIE_SECURE` defaults to `true` and demonstration seeding defaults to `false` when `APP_ENV=production`. Development keeps HTTP cookies and sample data available unless these values are explicitly overridden.
 
 ### Build Image
 
@@ -396,6 +407,22 @@ On the first connection, register the PostgreSQL server with these values:
 | Password | value of `POSTGRES_PASSWORD` |
 
 Use `db`, not `localhost`, because pgAdmin connects to PostgreSQL through the internal Docker Compose network.
+
+### Database migrations
+
+Alembic migrations are applied automatically when the application starts. To apply or inspect them manually:
+
+```bash
+alembic upgrade head
+alembic current
+alembic check
+```
+
+After changing a SQLModel table, generate a new migration and review it before applying it:
+
+```bash
+alembic revision --autogenerate -m "describe the schema change"
+```
 
 ---
 
@@ -457,9 +484,9 @@ echo "DEPLOY DONE $(date)"
 
 ## Notes
 
-* PostgreSQL tables and idempotent demonstration data are automatically created on startup in Docker.
-* SQLite is automatically created only when the application is launched outside Docker without database environment variables.
-* Authentication relies on JWT tokens stored in HTTP-only cookies.
+* PostgreSQL and SQLite schemas are upgraded through Alembic when the application starts.
+* Demonstration data is enabled by default only outside production and is controlled by `SEED_DEMO_DATA`.
+* Authentication relies on JWT tokens stored in HTTP-only cookies and all state-changing forms use CSRF tokens.
 * Passwords are hashed before storage using Argon2.
 * Pagination is implemented on the public homepage and search results.
 * Docker is used for production deployment.
