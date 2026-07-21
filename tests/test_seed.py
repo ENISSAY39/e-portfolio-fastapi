@@ -2,6 +2,7 @@
 
 from collections import Counter
 from datetime import date, datetime
+from pathlib import Path
 
 import pytest
 from sqlalchemy import Engine
@@ -259,3 +260,71 @@ def test_seed_repairs_only_missing_related_demo_records(
         assert preserved_experience_ids < {
             experience.id for experience in experiences
         }
+
+
+def test_reset_db_recreates_an_empty_schema_only_on_the_temporary_database(
+    test_engine: Engine,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with Session(test_engine) as session:
+        user = User(
+            name="Temporary",
+            first_name="User",
+            birth_date=date(1990, 1, 1),
+            mail="temporary@example.com",
+            phone="0612345678",
+            hashed_password=TEST_PASSWORD_HASH,
+        )
+        session.add(user)
+        session.flush()
+        assert user.id is not None
+        session.add(
+            Education(
+                school_name="Temporary school",
+                date_start=datetime(2020, 9, 1),
+                date_end=datetime(2023, 6, 1),
+                description="Removed by reset",
+                major="Testing",
+                user_id=user.id,
+            )
+        )
+        session.add(
+            Experience(
+                title="Temporary experience",
+                date_start=datetime(2023, 7, 1),
+                date_end=datetime(2024, 1, 1),
+                description="Removed by reset",
+                company="Test company",
+                user_id=user.id,
+            )
+        )
+        session.commit()
+
+    temporary_database = Path(str(test_engine.url.database)).resolve()
+    assert temporary_database == (tmp_path / "test.db").resolve()
+
+    monkeypatch.setattr(seed_module, "engine", test_engine)
+    assert seed_module.engine is test_engine
+    seed_module.reset_db()
+
+    assert capsys.readouterr().out == "Database reset\n"
+
+    with Session(test_engine) as session:
+        assert session.exec(select(User)).all() == []
+        assert session.exec(select(Education)).all() == []
+        assert session.exec(select(Experience)).all() == []
+
+        recreated_schema_user = User(
+            name="After",
+            first_name="Reset",
+            birth_date=date(1991, 2, 2),
+            mail="after-reset@example.com",
+            phone="0687654321",
+            hashed_password=TEST_PASSWORD_HASH,
+        )
+        session.add(recreated_schema_user)
+        session.commit()
+
+        assert session.exec(select(User)).one().mail == "after-reset@example.com"
