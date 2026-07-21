@@ -3,3 +3,7 @@ __pycache__/
 .git/
 .vscode/
 e-portfolio-venv/
+.env
+.venv/
+env/
+database.db
