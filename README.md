@@ -288,8 +288,8 @@ python -m pip install -r requirements.txt
 python -m pytest
 ```
 
-`pytest.ini` enables branch coverage for the application code and enforces an
-initial minimum of 75%. The terminal report lists uncovered lines. GitHub
+`pytest.ini` enables branch coverage for the application code and enforces a
+minimum of 90%. The terminal report lists uncovered lines. GitHub
 Actions runs the same command for every push and pull request, after checking
 that the application imports and that Alembic can build a schema matching the
 SQLModel metadata on an isolated SQLite database.
