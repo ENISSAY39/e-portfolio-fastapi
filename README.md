@@ -230,7 +230,7 @@ Relationship rules:
 
 ---
 
-## Local Installation
+## Local development with Docker
 
 ### 1. Clone the Repository
 
@@ -239,24 +239,40 @@ git clone <repository-url>
 cd e-portfolio
 ```
 
-### 2. Create a Virtual Environment
+### 2. Configure the environment
 
-```bash
-python3 -m venv env
-source env/bin/activate
+Create the local environment file and replace every placeholder secret:
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-Windows:
+Keep the development values below when accessing the application over local HTTP:
 
-```bash
-env\Scripts\activate
+```dotenv
+APP_ENV=development
+COOKIE_SECURE=false
+SEED_DEMO_DATA=true
 ```
 
-### 3. Install Dependencies
+### 3. Build and start the complete stack
 
-```bash
-pip install -r requirements.txt
+```powershell
+docker compose up -d --build
+docker compose ps
 ```
+
+Follow the application logs with:
+
+```powershell
+docker compose logs -f eportfolio
+```
+
+The application is available at `http://127.0.0.1:8000` and pgAdmin at
+`http://127.0.0.1:5050`. Docker Compose is the reference development and test
+workflow for this project; running `fastapi dev` directly on the host is not
+required.
+
 ## Dependencies
 
 This section explains the key dependencies and why they were chosen.
@@ -306,18 +322,6 @@ This section explains the key dependencies and why they were chosen.
 | `watchfiles` | File watching for hot-reload in development mode |
 
 > **Note:** Some packages in `requirements.txt` are transitive dependencies (automatically installed by the packages above) and are not imported directly in the application code.
-
-### 4. Start the Application
-
-```bash
-fastapi dev
-```
-
-Application available at:
-
-```text
-http://127.0.0.1:8000
-```
 
 ---
 
@@ -410,19 +414,88 @@ Use `db`, not `localhost`, because pgAdmin connects to PostgreSQL through the in
 
 ### Database migrations
 
-Alembic migrations are applied automatically when the application starts. To apply or inspect them manually:
+The files in `schemas/` are SQLModel table definitions. Changing one of these
+files changes the expected Python metadata, but it does not alter an existing
+PostgreSQL database by itself. Alembic records every structural database change
+as a versioned Python file under `migrations/versions/`.
 
-```bash
-alembic upgrade head
-alembic current
-alembic check
+At application startup, `main.py` automatically runs the equivalent of
+`alembic upgrade head`. This applies existing migrations, but generating a new
+migration remains an explicit developer action so that its SQL operations can
+be reviewed before they reach a shared database.
+
+#### Change a schema with the Docker workflow
+
+Run every command below from the repository root in PowerShell.
+
+1. Start PostgreSQL and make sure the application image contains the current
+   dependencies:
+
+```powershell
+docker compose up -d db
+docker compose build eportfolio
 ```
 
-After changing a SQLModel table, generate a new migration and review it before applying it:
+2. Apply all migrations that already exist before changing the schema:
 
-```bash
-alembic revision --autogenerate -m "describe the schema change"
+```powershell
+docker compose run --rm --no-deps --volume "${PWD}:/app" eportfolio python -m alembic upgrade head
 ```
+
+3. Modify the relevant file, for example `schemas/User.py`:
+
+```python
+bio: str | None = Field(default=None)
+```
+
+4. Generate a migration. The bind mount is required so that the generated file
+   is written into the host repository instead of disappearing with the
+   temporary container:
+
+```powershell
+docker compose run --rm --no-deps --volume "${PWD}:/app" eportfolio python -m alembic revision --autogenerate -m "add user bio"
+```
+
+5. Open the new file in `migrations/versions/` and review both `upgrade()` and
+   `downgrade()`. Autogeneration is only a proposal. In particular:
+
+   * a renamed column can be detected as a destructive drop followed by an add;
+   * a new non-nullable column can fail when the table already contains rows;
+   * a type change can require an explicit PostgreSQL conversion;
+   * an unexpected `drop_table()` or `drop_column()` must not be applied.
+
+6. Apply and verify the new migration:
+
+```powershell
+docker compose run --rm --no-deps --volume "${PWD}:/app" eportfolio python -m alembic upgrade head
+docker compose run --rm --no-deps --volume "${PWD}:/app" eportfolio python -m alembic current
+docker compose run --rm --no-deps --volume "${PWD}:/app" eportfolio python -m alembic check
+```
+
+`alembic check` must report `No new upgrade operations detected.`
+
+7. Rebuild and test the application through Docker:
+
+```powershell
+docker compose up -d --build eportfolio
+docker compose logs -f eportfolio
+```
+
+8. Commit the schema and its migration together:
+
+```powershell
+git add schemas/User.py migrations/versions/
+git commit -m "feat(database): add user bio"
+```
+
+A migration is required for tables, columns, SQL types, nullability, database
+defaults, unique constraints, indexes, foreign keys, and check constraints. It
+is not required for route logic, templates, CSS, or application-only validation
+rules.
+
+Never edit an already merged and applied migration to represent a later schema
+change. Create a new migration instead. Never test a destructive downgrade on
+the shared development or production database.
 
 ---
 
