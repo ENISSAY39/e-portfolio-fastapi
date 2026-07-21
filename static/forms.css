@@ -1,0 +1,217 @@
+:root {
+    --form-bg: #f4f7fb;
+    --form-card: #ffffff;
+    --form-text: #172033;
+    --form-muted: #64748b;
+    --form-border: #cbd5e1;
+    --form-primary: #2563eb;
+    --form-primary-dark: #1d4ed8;
+}
+
+.form-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.11), transparent 26rem),
+        var(--form-bg);
+    color: var(--form-text);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.form-shell {
+    width: min(780px, calc(100% - 32px));
+    margin: 44px auto 72px;
+}
+
+.form-shell--compact {
+    width: min(620px, calc(100% - 32px));
+}
+
+.form-heading {
+    margin-bottom: 22px;
+}
+
+.form-heading h1 {
+    margin: 0;
+    color: var(--form-text);
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-weight: 850;
+    letter-spacing: -0.04em;
+}
+
+.form-heading > p:last-child {
+    margin: 9px 0 0;
+    color: var(--form-muted);
+}
+
+.form-eyebrow {
+    margin: 0 0 7px;
+    color: var(--form-primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.content-form {
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(203, 213, 225, 0.86);
+    border-radius: 22px;
+    background: var(--form-card);
+    box-shadow: 0 18px 50px rgba(30, 64, 175, 0.09);
+    padding: clamp(22px, 5vw, 36px);
+}
+
+.form-grid {
+    display: grid;
+    gap: 0 18px;
+}
+
+.form-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-group {
+    margin-bottom: 22px;
+}
+
+.field-group label {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 0.88rem;
+    font-weight: 750;
+}
+
+.label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.label-row span {
+    color: var(--form-muted);
+    font-size: 0.75rem;
+}
+
+.content-form input:not([type="hidden"]),
+.content-form textarea,
+.content-form select {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: 1px solid var(--form-border);
+    border-radius: 11px;
+    background: #ffffff;
+    padding: 11px 12px;
+    color: var(--form-text);
+    font: inherit;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.content-form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.content-form input:focus,
+.content-form textarea:focus,
+.content-form select:focus {
+    border-color: var(--form-primary);
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.content-form input::placeholder,
+.content-form textarea::placeholder {
+    color: #94a3b8;
+}
+
+.field-help {
+    margin: 7px 0 0;
+    color: var(--form-muted);
+    font-size: 0.77rem;
+    line-height: 1.45;
+}
+
+.form-error {
+    margin: 0 0 22px;
+    border: 1px solid #fecaca;
+    border-radius: 11px;
+    background: #fff1f2;
+    padding: 11px 13px;
+    color: #b42318;
+    font-size: 0.88rem;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--form-primary);
+    border-radius: 11px;
+    background: var(--form-primary);
+    padding: 10px 17px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 750;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button:hover {
+    border-color: var(--form-primary-dark);
+    background: var(--form-primary-dark);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.button--secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+}
+
+.button--secondary:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+@media (max-width: 620px) {
+    .form-shell {
+        margin-top: 28px;
+    }
+
+    .form-grid--two {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .content-form input,
+    .content-form textarea,
+    .content-form select {
+        transition: none;
+    }
+}

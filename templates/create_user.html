@@ -7,11 +7,18 @@
 
     <!-- Métadonnées de la page de création de compte. -->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add a user</title>
+    <link rel="stylesheet" href="/static/header.css">
 
 </head>
 
 <body>
+
+    <!-- Navigation publique normalisée sur l'ensemble du parcours d'inscription. -->
+    {% set header_variant = "public" %}
+    {% set header_active = "register" %}
+    {% include "_site_header.html" %}
 
     <!-- Conteneur principal centré de la page d'inscription. -->
     <div class="container">
@@ -28,34 +35,34 @@
             <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
 
             <!-- Identité civile ; les valeurs valides sont restaurées après une erreur. -->
-            <label>Name :</label>
-            <input type="text" name="name" value="{{ form_data.get('name', '') }}" maxlength="100"
+            <label for="name">Name :</label>
+            <input id="name" type="text" name="name" value="{{ form_data.get('name', '') }}" maxlength="100"
                 autocomplete="family-name" required>
 
-            <label>First name :</label>
-            <input type="text" name="first_name" value="{{ form_data.get('first_name', '') }}" maxlength="100"
+            <label for="first_name">First name :</label>
+            <input id="first_name" type="text" name="first_name" value="{{ form_data.get('first_name', '') }}" maxlength="100"
                 autocomplete="given-name" required>
 
             <!-- Date de naissance au format natif attendu par le champ HTML date. -->
-            <label>Date of birth :</label>
-            <input type="date" name="birth_date" value="{{ form_data.get('birth_date', '') }}" autocomplete="bday"
+            <label for="birth_date">Date of birth :</label>
+            <input id="birth_date" type="date" name="birth_date" value="{{ form_data.get('birth_date', '') }}" autocomplete="bday"
                 required>
 
             <!-- Adresse utilisée comme identifiant de connexion. -->
-            <label>Email :</label>
-            <input type="email" name="mail" value="{{ form_data.get('mail', '') }}" maxlength="320"
+            <label for="mail">Email :</label>
+            <input id="mail" type="email" name="mail" value="{{ form_data.get('mail', '') }}" maxlength="320"
                 autocomplete="email" required>
 
             <!-- Le mot de passe n'est jamais réinjecté dans la page après une erreur. -->
-            <label>Password :</label>
-            <input type="password" name="password" minlength="10" maxlength="128" autocomplete="new-password"
+            <label for="password">Password :</label>
+            <input id="password" type="password" name="password" minlength="10" maxlength="128" autocomplete="new-password"
                 aria-describedby="password-help" required>
             <!-- Aide accessible reliée au champ par aria-describedby. -->
             <small id="password-help">At least 10 characters, with uppercase, lowercase and a number.</small>
 
             <!-- Numéro de téléphone restauré si le serveur refuse un autre champ. -->
-            <label>Cell phone :</label>
-            <input type="tel" name="phone" value="{{ form_data.get('phone', '') }}" maxlength="25" autocomplete="tel"
+            <label for="phone">Cell phone :</label>
+            <input id="phone" type="tel" name="phone" value="{{ form_data.get('phone', '') }}" maxlength="25" autocomplete="tel"
                 required>
 
             <!-- Soumission finale du formulaire d'inscription. -->

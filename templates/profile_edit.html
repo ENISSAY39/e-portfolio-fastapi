@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit profile</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
+</head>
+
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
+
+    <main class="form-shell">
+        <div class="form-heading">
+            <p class="form-eyebrow">Profile details</p>
+            <h1>Edit your profile</h1>
+            <p>Keep your identity, contact details, and introduction up to date.</p>
+        </div>
+
+        <form class="content-form" action="/profil/edit" method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+
+            <div class="form-grid form-grid--two">
+                <div class="field-group">
+                    <label for="first_name">First name</label>
+                    <input id="first_name" type="text" name="first_name" maxlength="100" autocomplete="given-name" value="{{ values.get('first_name', user.first_name) }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="name">Last name</label>
+                    <input id="name" type="text" name="name" maxlength="100" autocomplete="family-name" value="{{ values.get('name', user.name) }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="birth_date">Birth date</label>
+                    <input id="birth_date" type="date" name="birth_date" autocomplete="bday" value="{{ values.get('birth_date', user.birth_date.strftime('%Y-%m-%d')) }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="phone">Phone</label>
+                    <input id="phone" type="tel" name="phone" maxlength="25" autocomplete="tel" value="{{ values.get('phone', user.phone) }}" required>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="mail">Email</label>
+                <input id="mail" type="email" name="mail" autocomplete="email" value="{{ values.get('mail', user.mail) }}" required>
+                <p class="field-help">Your secure sign-in session is renewed automatically if this address changes.</p>
+            </div>
+
+            <div class="field-group">
+                <div class="label-row"><label for="bio">Biography</label><span>3,000 characters max.</span></div>
+                <textarea id="bio" name="bio" rows="7" maxlength="3000" placeholder="Tell visitors what drives you, what you are learning, and the kind of work you enjoy.">{{ values.get('bio', user.bio or '') }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil">Cancel</a>
+                <button class="button" type="submit">Save profile</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

@@ -4,6 +4,7 @@
 <head>
     <!-- Métadonnées de la page publique listant les portfolios. -->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>e-portfolio</title>
 
     <!-- Anciennes variantes Jinja conservées à titre de référence mais volontairement inactives. -->
@@ -11,30 +12,16 @@
     <!-- <link rel="stylesheet" href="{{ url_for('static', path='home.css') }}"> -->
     <!-- Feuille de style actuellement chargée par le navigateur. -->
     <link rel="stylesheet" href="/static/home.css">
+    <link rel="stylesheet" href="/static/header.css">
 
 </head>
 
 <body>
 
-    <!-- En-tête public : titre du service et accès à l'authentification. -->
-    <div class="header">
-
-        <h1>Welcome to Public e-Portfolios</h1>
-
-        <!-- Actions proposées aux visiteurs non connectés. -->
-        <div class="header-buttons">
-
-            <a href="/login">
-                <button type="button">Login</button>
-            </a>
-
-            <a href="/create_user">
-                <button type="button">Sign Up</button>
-            </a>
-
-        </div>
-
-    </div>
+    <!-- En-tête public partagé avec les autres pages du site. -->
+    {% set header_variant = "public" %}
+    {% set header_active = "directory" %}
+    {% include "_site_header.html" %}
 
     <!-- Recherche GET : le terme reste dans l'URL et peut être combiné avec la pagination. -->
     <form action="/search" method="get" class="search-form">

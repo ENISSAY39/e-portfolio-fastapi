@@ -2,82 +2,61 @@
 <html lang="fr">
 
 <head>
-    <!-- Métadonnées et styles partagés des formulaires du profil. -->
     <meta charset="UTF-8">
-    <title>Éducation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if edu %}Modify an education{% else %}Add an education{% endif %}</title>
     <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
 </head>
 
-<body>
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
 
-    <!-- Carte principale utilisée aussi bien pour la création que pour l'édition. -->
-    <div class="container">
+    <main class="form-shell">
+        <div class="form-heading">
+            <p class="form-eyebrow">Learning journey</p>
+            <h1>{% if edu %}Modify an education{% else %}Add an education{% endif %}</h1>
+            <p>Add a degree, course, certification, or another meaningful learning experience.</p>
+        </div>
 
-        {# Priorise les valeurs soumises afin de ne pas vider le formulaire après une erreur. #}
-        {% set values = form_values or {} %}
-
-        {# La présence de `edu` détermine le mode édition ; son absence active le mode création. #}
-        <h1>
-            {% if edu %}
-            Modify an education
-            {% else %}
-            Add an education
-            {% endif %}
-        </h1>
-
-        {# État d'erreur de validation communiqué de manière accessible. #}
-        {% if error %}
-        <p class="form-error" role="alert">{{ error }}</p>
-        {% endif %}
-
-        <!-- L'action cible la route d'édition avec l'identifiant ou la route de création. -->
-        <form action="{% if edu %}/profil/education/edit/{{ edu.id }}{% else %}/profil/education{% endif %}"
-            method="post">
-            {# Protection anti-CSRF obligatoire pour toute mutation du profil. #}
+        <form class="content-form" action="{% if edu %}/profil/education/edit/{{ edu.id }}{% else %}/profil/education{% endif %}" method="post">
             <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
 
+            <div class="form-grid form-grid--two">
+                <div class="field-group">
+                    <label for="school_name">School</label>
+                    <input id="school_name" type="text" name="school_name" value="{{ values.get('school_name', edu.school_name if edu else '') }}" maxlength="150" required>
+                </div>
+                <div class="field-group">
+                    <label for="major">Major</label>
+                    <input id="major" type="text" name="major" value="{{ values.get('major', edu.major if edu else '') }}" maxlength="150" required>
+                </div>
+                <div class="field-group">
+                    <label for="date_start">Start date</label>
+                    <input id="date_start" type="date" name="date_start" value="{{ values.get('date_start', edu.date_start.strftime('%Y-%m-%d') if edu else '') }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="date_end">End date</label>
+                    <input id="date_end" type="date" name="date_end" value="{{ values.get('date_end', edu.date_end.strftime('%Y-%m-%d') if edu else '') }}" required>
+                </div>
+            </div>
 
-            <!-- Établissement concerné par la formation. -->
-            <label>School :</label>
-            <input type="text" name="school_name"
-                value="{{ values.get('school_name', edu.school_name if edu else '') }}" maxlength="150" required>
+            <div class="field-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="6" maxlength="3000" required>{{ values.get('description', edu.description if edu else '') }}</textarea>
+            </div>
 
-
-            <!-- Période de formation, formatée en ISO pour les champs HTML date. -->
-            <label>Start date :</label>
-            <input type="date" name="date_start"
-                value="{{ values.get('date_start', edu.date_start.strftime('%Y-%m-%d') if edu else '') }}" required>
-
-            <label>End date :</label>
-            <input type="date" name="date_end"
-                value="{{ values.get('date_end', edu.date_end.strftime('%Y-%m-%d') if edu else '') }}" required>
-
-            <!-- Contenu de la formation et spécialité suivie. -->
-            <label>Description :</label>
-            <textarea name="description" rows="3" maxlength="3000"
-                required>{{ values.get('description', edu.description if edu else '') }}</textarea>
-
-            <label>Major :</label>
-            <input type="text" name="major" value="{{ values.get('major', edu.major if edu else '') }}"
-                maxlength="150" required>
-
-
-            {# Libellé du bouton adapté au mode courant du formulaire. #}
-            <button type="submit">
-                {% if edu %}Update{% else %}Add{% endif %}
-            </button>
-
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil#education">Cancel</a>
+                <button class="button" type="submit">{% if edu %}Update{% else %}Add education{% endif %}</button>
+            </div>
         </form>
-
-        <br>
-
-        <!-- Navigation de retour vers le tableau de bord privé. -->
-        <a href="/profil">
-            <button type="button">Back</button>
-        </a>
-
-    </div>
-
+    </main>
 </body>
 
 </html>

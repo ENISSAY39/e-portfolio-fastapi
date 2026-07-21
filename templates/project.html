@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if project %}Edit project{% else %}Add a project{% endif %}</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
+</head>
+
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
+
+    <main class="form-shell">
+        <div class="form-heading">
+            <p class="form-eyebrow">Selected work</p>
+            <h1>{% if project %}Edit project{% else %}Add a project{% endif %}</h1>
+            <p>Explain the problem, your contribution, and the technologies behind the result.</p>
+        </div>
+        <form class="content-form" action="{% if project %}/profil/project/edit/{{ project.id }}{% else %}/profil/project{% endif %}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+            <div class="field-group">
+                <label for="title">Project title</label>
+                <input id="title" type="text" name="title" maxlength="150" value="{{ values.get('title', project.title if project else '') }}" placeholder="e.g. Student collaboration platform" required>
+            </div>
+            <div class="field-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="7" maxlength="5000" placeholder="What did you build and what was your role?" required>{{ values.get('description', project.description if project else '') }}</textarea>
+            </div>
+            <div class="field-group">
+                <label for="technologies">Technologies</label>
+                <input id="technologies" type="text" name="technologies" maxlength="500" value="{{ values.get('technologies', project.technologies or '' if project else '') }}" placeholder="Python · FastAPI · PostgreSQL">
+                <p class="field-help">Separate technologies with commas or middle dots.</p>
+            </div>
+            <div class="form-grid form-grid--two">
+                <div class="field-group">
+                    <label for="project_url">Live project URL</label>
+                    <input id="project_url" type="url" name="project_url" maxlength="2048" value="{{ values.get('project_url', project.project_url or '' if project else '') }}" placeholder="https://example.com">
+                </div>
+                <div class="field-group">
+                    <label for="repository_url">Repository URL</label>
+                    <input id="repository_url" type="url" name="repository_url" maxlength="2048" value="{{ values.get('repository_url', project.repository_url or '' if project else '') }}" placeholder="https://github.com/you/project">
+                </div>
+            </div>
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil#projects">Cancel</a>
+                <button class="button" type="submit">{% if project %}Save project{% else %}Add project{% endif %}</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

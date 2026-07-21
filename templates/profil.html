@@ -2,125 +2,282 @@
 <html lang="fr">
 
 <head>
-    <!-- Métadonnées et styles globaux du tableau de bord privé. -->
     <meta charset="UTF-8">
-    <title>Profil utilisateur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My portfolio workspace</title>
     <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/portfolio.css">
 </head>
 
-<body>
+<body class="portfolio-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
 
-    <!-- Conteneur de toutes les informations et actions du propriétaire connecté. -->
-    <div class="container">
-
-        <!-- En-tête du profil : identité résumée et déconnexion sécurisée. -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h1>Welcome {{ first_name }} {{ name }}</h1>
-
-            <!-- La déconnexion est une mutation POST protégée contre les requêtes intersites. -->
-            <form action="/logout" method="post">
-                {# Jeton anti-CSRF produit pour la session authentifiée courante. #}
-                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
-                <button type="submit">Logout</button>
-            </form>
-        </div>
-
-        <!-- Informations personnelles calculées ou chargées par la route du profil. -->
-        <div>
-            <p><strong>Name :</strong> {{ name }}</p>
-            <p><strong>First name :</strong> {{ first_name }}</p>
-            <p><strong>Age :</strong> {{ age }}</p>
-            <p><strong>Email :</strong> {{ mail }}</p>
-            <p><strong>Cell phone :</strong> {{ phone }}</p>
-        </div>
-
-        <hr>
-
-        <!-- Expériences professionnelles appartenant à l'utilisateur connecté. -->
-        <h2>My Experiences</h2>
-
-        <ul>
-            {# Une entrée et ses actions d'administration sont rendues pour chaque expérience possédée. #}
-            {% for exp in experiences %}
-            <li>
-                <!-- Résumé de l'expérience : poste, entreprise, dates et description. -->
-                <strong>{{ exp.title }}</strong> - {{ exp.company }}<br>
-                <small>{{ exp.date_start }} → {{ exp.date_end }}</small><br>
-                {{ exp.description }}
-
-                <!-- Actions disponibles sur cette expérience précise. -->
-                <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
-
-                    <!-- Navigation vers le formulaire d'édition de l'expérience. -->
-                    <a href="/profil/experience/edit/{{ exp.id }}">
-                        <button type="button">Modifier</button>
-                    </a>
-
-                    <!-- Suppression POST protégée ; le serveur revérifie aussi le propriétaire. -->
-                    <form action="/profil/experience/delete/{{ exp.id }}" method="post" style="margin: 0;">
-                        {# Jeton propre à la session pour autoriser la mutation destructive. #}
-                        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
-                        <button type="submit" style="background-color: #dc3545;">Supprimer</button>
-                    </form>
-
+    <main class="portfolio-shell">
+        <section class="profile-hero" aria-labelledby="profile-title">
+            <div class="profile-hero__main">
+                <div class="profile-avatar" aria-hidden="true">
+                    {{ first_name[:1] }}{{ name[:1] }}
                 </div>
-            </li>
-            {# État vide lorsque le profil ne contient encore aucune expérience. #}
-            {% else %}
-            <li>No experience available at the moment.</li>
-            {% endfor %}
-        </ul>
-
-        <hr>
-
-        <!-- Navigation vers le formulaire de création d'une expérience. -->
-        <a href="/profil/experience">
-            <button type="button">Add an experience</button>
-        </a>
-
-        <!-- Formations appartenant à l'utilisateur connecté. -->
-        <hr>
-        <h2>My Education</h2>
-
-        <ul>
-            {# Une entrée et ses actions d'administration sont rendues pour chaque formation possédée. #}
-            {% for edu in educations %}
-            <li>
-                <!-- Résumé de la formation : école, spécialité, dates et description. -->
-                <strong>{{ edu.school_name }}</strong> - {{ edu.major }}<br>
-                <small>{{ edu.date_start }} → {{ edu.date_end }}</small><br>
-                {{ edu.description }}
-
-                <!-- Actions disponibles sur cette formation précise. -->
-                <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
-
-                    <!-- Navigation vers le formulaire d'édition de la formation. -->
-                    <a href="/profil/education/edit/{{ edu.id }}">
-                        <button type="button">Modify</button>
-                    </a>
-
-                    <!-- Suppression POST protégée ; le serveur revérifie aussi le propriétaire. -->
-                    <form action="/profil/education/delete/{{ edu.id }}" method="post" style="margin: 0;">
-                        {# Jeton propre à la session pour autoriser la mutation destructive. #}
-                        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
-                        <button type="submit" style="background-color: #dc3545;">Delete</button>
-                    </form>
-
+                <div class="profile-hero__copy">
+                    <p class="eyebrow">Your portfolio workspace</p>
+                    <h1 id="profile-title">Welcome {{ first_name }} {{ name }}</h1>
+                    {% if bio %}
+                    <p class="profile-bio">{{ bio }}</p>
+                    {% else %}
+                    <p class="profile-bio profile-bio--empty">
+                        Add a short biography to introduce your experience, goals, and personality.
+                    </p>
+                    {% endif %}
                 </div>
-            </li>
-            {# État vide lorsque le profil ne contient encore aucune formation. #}
-            {% else %}
-            <li>No education available at the moment.</li>
-            {% endfor %}
-        </ul>
+            </div>
 
-        <!-- Navigation vers le formulaire de création d'une formation. -->
-        <a href="/profil/education">
-            <button type="button">Add an education</button>
-        </a>
+            <div class="profile-hero__actions">
+                <a class="button button--secondary" href="/portfolio/{{ user.id }}">View public portfolio</a>
+                <a class="button" href="/profil/edit">Edit profile</a>
+            </div>
 
-    </div>
+            <dl class="profile-meta">
+                <div>
+                    <dt>Name :</dt>
+                    <dd>{{ name }}</dd>
+                </div>
+                <div>
+                    <dt>First name :</dt>
+                    <dd>{{ first_name }}</dd>
+                </div>
+                <div>
+                    <dt>Age :</dt>
+                    <dd>{{ age }}</dd>
+                </div>
+                <div>
+                    <dt>Email :</dt>
+                    <dd><a href="mailto:{{ mail }}">{{ mail }}</a></dd>
+                </div>
+                <div>
+                    <dt>Cell phone :</dt>
+                    <dd><a href="tel:{{ phone }}">{{ phone }}</a></dd>
+                </div>
+            </dl>
+        </section>
 
+        <nav class="section-tabs" aria-label="Portfolio sections">
+            <a href="#projects">Projects <span>{{ projects | length }}</span></a>
+            <a href="#skills">Skills <span>{{ skills | length }}</span></a>
+            <a href="#experience">Experience <span>{{ experiences | length }}</span></a>
+            <a href="#education">Education <span>{{ educations | length }}</span></a>
+            <a href="#links">Links <span>{{ links | length }}</span></a>
+        </nav>
+
+        <div class="portfolio-layout">
+            <section class="content-section content-section--wide" id="projects" aria-labelledby="projects-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Selected work</p>
+                        <h2 id="projects-title">My Projects</h2>
+                    </div>
+                    <a class="button button--compact" href="/profil/project">Add a project</a>
+                </div>
+
+                {% if projects %}
+                <div class="project-grid">
+                    {% for project in projects %}
+                    <article class="project-card">
+                        <div class="project-card__body">
+                            <h3>{{ project.title }}</h3>
+                            {% if project.technologies %}
+                            <p class="tag-line">{{ project.technologies }}</p>
+                            {% endif %}
+                            <p>{{ project.description }}</p>
+                        </div>
+                        {% if project.project_url or project.repository_url %}
+                        <div class="project-card__links" aria-label="Links for {{ project.title }}">
+                            {% if project.project_url %}
+                            <a href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">Live project</a>
+                            {% endif %}
+                            {% if project.repository_url %}
+                            <a href="{{ project.repository_url }}" target="_blank" rel="noopener noreferrer">Repository</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="item-actions">
+                            <a class="text-action" href="/profil/project/edit/{{ project.id }}">Edit</a>
+                            <form action="/profil/project/delete/{{ project.id }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                                <button class="text-action text-action--danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No projects yet.</strong>
+                    <p>Add a project to show what you can build and the tools you use.</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="content-section" id="skills" aria-labelledby="skills-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Expertise</p>
+                        <h2 id="skills-title">My Skills</h2>
+                    </div>
+                    <a class="button button--compact" href="/profil/skill">Add a skill</a>
+                </div>
+
+                {% if skills %}
+                <ul class="skill-list">
+                    {% for skill in skills %}
+                    <li class="skill-item">
+                        <div class="skill-item__heading">
+                            <strong>{{ skill.name }}</strong>
+                            <span>{{ skill.level }}/5</span>
+                        </div>
+                        <div class="skill-meter skill-meter--{{ skill.level }}" aria-label="Level {{ skill.level }} out of 5">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="item-actions">
+                            <a class="text-action" href="/profil/skill/edit/{{ skill.id }}">Edit</a>
+                            <form action="/profil/skill/delete/{{ skill.id }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                                <button class="text-action text-action--danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No skills yet.</strong>
+                    <p>Add the abilities you want visitors to notice first.</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="content-section" id="links" aria-labelledby="links-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Around the web</p>
+                        <h2 id="links-title">My Links</h2>
+                    </div>
+                    <a class="button button--compact" href="/profil/link">Add a link</a>
+                </div>
+
+                {% if links %}
+                <ul class="link-list">
+                    {% for link in links %}
+                    <li>
+                        <a class="external-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                            <span>{{ link.label }}</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                        <div class="item-actions">
+                            <a class="text-action" href="/profil/link/edit/{{ link.id }}">Edit</a>
+                            <form action="/profil/link/delete/{{ link.id }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                                <button class="text-action text-action--danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No links yet.</strong>
+                    <p>Connect your portfolio to GitHub, LinkedIn, or another website.</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="content-section content-section--wide" id="experience" aria-labelledby="experience-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Professional journey</p>
+                        <h2 id="experience-title">My Experiences</h2>
+                    </div>
+                    <a class="button button--compact" href="/profil/experience">Add an experience</a>
+                </div>
+
+                {% if experiences %}
+                <ol class="timeline">
+                    {% for exp in experiences %}
+                    <li class="timeline__item">
+                        <div class="timeline__marker" aria-hidden="true"></div>
+                        <article>
+                            <div class="timeline__heading">
+                                <div>
+                                    <h3>{{ exp.title }}</h3>
+                                    <p>{{ exp.company }}</p>
+                                </div>
+                                <time>{{ exp.date_start.strftime('%b %Y') }} – {{ exp.date_end.strftime('%b %Y') }}</time>
+                            </div>
+                            <p>{{ exp.description }}</p>
+                            <div class="item-actions">
+                                <a class="text-action" href="/profil/experience/edit/{{ exp.id }}">Modify</a>
+                                <form action="/profil/experience/delete/{{ exp.id }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                                    <button class="text-action text-action--danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </article>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No experience available at the moment.</strong>
+                    <p>Add your first role, internship, or freelance mission.</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="content-section content-section--wide" id="education" aria-labelledby="education-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Learning journey</p>
+                        <h2 id="education-title">My Education</h2>
+                    </div>
+                    <a class="button button--compact" href="/profil/education">Add an education</a>
+                </div>
+
+                {% if educations %}
+                <ol class="timeline">
+                    {% for edu in educations %}
+                    <li class="timeline__item">
+                        <div class="timeline__marker" aria-hidden="true"></div>
+                        <article>
+                            <div class="timeline__heading">
+                                <div>
+                                    <h3>{{ edu.school_name }}</h3>
+                                    <p>{{ edu.major }}</p>
+                                </div>
+                                <time>{{ edu.date_start.strftime('%b %Y') }} – {{ edu.date_end.strftime('%b %Y') }}</time>
+                            </div>
+                            <p>{{ edu.description }}</p>
+                            <div class="item-actions">
+                                <a class="text-action" href="/profil/education/edit/{{ edu.id }}">Modify</a>
+                                <form action="/profil/education/delete/{{ edu.id }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                                    <button class="text-action text-action--danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </article>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No education available at the moment.</strong>
+                    <p>Add a degree, course, or certification.</p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
 </body>
 
 </html>

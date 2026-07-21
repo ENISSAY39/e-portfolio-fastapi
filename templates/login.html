@@ -1,26 +1,23 @@
 <!DOCTYPE html>
+<html lang="fr">
 
 <head>
     <!-- Métadonnées et styles dédiés à la page de connexion. -->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign In</title>
 
     <link rel="stylesheet" href="/static/login_style.css">
+    <link rel="stylesheet" href="/static/header.css">
 
 </head>
 
 <body>
 
-    <!-- En-tête public avec une action de retour vers l'accueil. -->
-    <div class="header">
-        <h1>Welcome to Public e-Portfolios</h1>
-        <!-- Navigation simple : le bouton n'envoie aucun formulaire. -->
-        <div class="header-buttons">
-            <a href="/">
-                <button type="button">Home</button>
-            </a>
-        </div>
-    </div>
+    <!-- En-tête public partagé ; la page courante est annoncée aux technologies d'assistance. -->
+    {% set header_variant = "public" %}
+    {% set header_active = "login" %}
+    {% include "_site_header.html" %}
 
     <!-- Carte principale d'authentification. -->
     <div class="login-container">

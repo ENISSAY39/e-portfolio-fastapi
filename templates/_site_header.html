@@ -1,0 +1,45 @@
+{#
+    En-tete partage du site.
+
+    `header_variant` vaut "private" sur les pages authentifiees et "public"
+    ailleurs. `header_active` identifie, lorsque c'est utile, la page courante.
+    Le partial reutilise le contexte Jinja de la page qui l'inclut.
+#}
+{% set variant = header_variant | default("public") %}
+{% set active = header_active | default("") %}
+
+<header class="site-header">
+    <div class="site-header__inner">
+        <a class="site-header__brand" href="/" aria-label="e-Portfolio - Home">
+            <span class="site-header__brand-mark" aria-hidden="true">e</span>
+            <span>e-Portfolio</span>
+        </a>
+
+        <nav class="site-header__nav" aria-label="Main navigation">
+            <a class="site-header__link{% if active == 'directory' %} is-active{% endif %}" href="/"
+                {% if active == 'directory' %}aria-current="page"{% endif %}>
+                Portfolios
+            </a>
+
+            {% if variant == "private" %}
+            <a class="site-header__link{% if active == 'profile' %} is-active{% endif %}" href="/profil"
+                {% if active == 'profile' %}aria-current="page"{% endif %}>
+                My profile
+            </a>
+            <form class="site-header__logout" action="/logout" method="post">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <button class="site-header__action site-header__action--secondary" type="submit">Logout</button>
+            </form>
+            {% else %}
+            <a class="site-header__link{% if active == 'login' %} is-active{% endif %}" href="/login"
+                {% if active == 'login' %}aria-current="page"{% endif %}>
+                Sign in
+            </a>
+            <a class="site-header__action{% if active == 'register' %} is-active{% endif %}" href="/create_user"
+                {% if active == 'register' %}aria-current="page"{% endif %}>
+                Create account
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+</header>

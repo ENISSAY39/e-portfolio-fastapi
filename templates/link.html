@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if link %}Edit link{% else %}Add a link{% endif %}</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
+</head>
+
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
+
+    <main class="form-shell form-shell--compact">
+        <div class="form-heading">
+            <p class="form-eyebrow">Around the web</p>
+            <h1>{% if link %}Edit link{% else %}Add a link{% endif %}</h1>
+            <p>Connect visitors to a professional profile or another website.</p>
+        </div>
+        <form class="content-form" action="{% if link %}/profil/link/edit/{{ link.id }}{% else %}/profil/link{% endif %}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+            <div class="field-group">
+                <label for="label">Label</label>
+                <input id="label" type="text" name="label" maxlength="100" value="{{ values.get('label', link.label if link else '') }}" placeholder="e.g. GitHub" required>
+            </div>
+            <div class="field-group">
+                <label for="url">URL</label>
+                <input id="url" type="url" name="url" maxlength="2048" value="{{ values.get('url', link.url if link else '') }}" placeholder="https://github.com/your-name" required>
+                <p class="field-help">Only complete HTTP or HTTPS addresses are accepted.</p>
+            </div>
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil#links">Cancel</a>
+                <button class="button" type="submit">{% if link %}Save link{% else %}Add link{% endif %}</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

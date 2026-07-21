@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if skill %}Edit skill{% else %}Add a skill{% endif %}</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
+</head>
+
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
+    {% set current_level = values.get('level', skill.level if skill else 3) %}
+
+    <main class="form-shell form-shell--compact">
+        <div class="form-heading">
+            <p class="form-eyebrow">Expertise</p>
+            <h1>{% if skill %}Edit skill{% else %}Add a skill{% endif %}</h1>
+            <p>Name the skill and choose an honest proficiency level.</p>
+        </div>
+        <form class="content-form" action="{% if skill %}/profil/skill/edit/{{ skill.id }}{% else %}/profil/skill{% endif %}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+            <div class="field-group">
+                <label for="name">Skill name</label>
+                <input id="name" type="text" name="name" maxlength="100" value="{{ values.get('name', skill.name if skill else '') }}" placeholder="e.g. FastAPI" required>
+            </div>
+            <div class="field-group">
+                <label for="level">Proficiency</label>
+                <select id="level" name="level" required>
+                    <option value="1" {% if current_level|string == '1' %}selected{% endif %}>1 — Discovering</option>
+                    <option value="2" {% if current_level|string == '2' %}selected{% endif %}>2 — Familiar</option>
+                    <option value="3" {% if current_level|string == '3' %}selected{% endif %}>3 — Comfortable</option>
+                    <option value="4" {% if current_level|string == '4' %}selected{% endif %}>4 — Advanced</option>
+                    <option value="5" {% if current_level|string == '5' %}selected{% endif %}>5 — Expert</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil#skills">Cancel</a>
+                <button class="button" type="submit">{% if skill %}Save skill{% else %}Add skill{% endif %}</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

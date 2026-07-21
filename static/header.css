@@ -1,0 +1,200 @@
+:root {
+    --header-background: #ffffff;
+    --header-border: #dbe3f0;
+    --header-text: #172033;
+    --header-muted: #526078;
+    --header-primary: #2563eb;
+    --header-primary-dark: #1d4ed8;
+    --header-focus: #f59e0b;
+}
+
+/* Le composant garde la meme geometrie, quelles que soient les regles de page. */
+.site-header {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    flex: 0 0 auto;
+    align-self: stretch;
+    border-bottom: 1px solid var(--header-border);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    color: var(--header-text);
+}
+
+.site-header__inner {
+    width: min(1180px, calc(100% - 40px));
+    min-height: 72px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+}
+
+.site-header__brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+    color: var(--header-text);
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.site-header__brand:hover {
+    color: var(--header-primary);
+    text-decoration: none;
+}
+
+.site-header__brand-mark {
+    display: inline-grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--header-primary);
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.22);
+}
+
+.site-header__nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.site-header__link,
+.site-header__action {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: 0.94rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+        box-shadow 160ms ease, transform 160ms ease;
+}
+
+.site-header__link {
+    color: var(--header-muted);
+}
+
+.site-header__link:hover,
+.site-header__link.is-active {
+    background: #eff6ff;
+    color: var(--header-primary-dark);
+    text-decoration: none;
+}
+
+.site-header__action {
+    border-color: var(--header-primary);
+    background: var(--header-primary);
+    color: #ffffff;
+    box-shadow: 0 5px 12px rgba(37, 99, 235, 0.16);
+}
+
+.site-header__action:hover {
+    border-color: var(--header-primary-dark);
+    background: var(--header-primary-dark);
+    color: #ffffff;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.site-header__action--secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: var(--header-text);
+    box-shadow: none;
+}
+
+.site-header__action--secondary:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    color: var(--header-text);
+}
+
+.site-header__action.is-active {
+    outline: 3px solid rgba(37, 99, 235, 0.18);
+    outline-offset: 2px;
+}
+
+/* Neutralise les marges et dimensions globales appliquees aux formulaires/boutons. */
+.site-header__logout {
+    width: auto;
+    margin: 0;
+}
+
+.site-header__logout .site-header__action {
+    width: auto;
+    margin: 0;
+}
+
+.site-header a:focus-visible,
+.site-header button:focus-visible {
+    outline: 3px solid var(--header-focus);
+    outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+    .site-header__inner {
+        width: min(100% - 28px, 1180px);
+        min-height: 64px;
+        gap: 12px;
+    }
+
+    .site-header__brand {
+        font-size: 0;
+    }
+
+    .site-header__brand-mark {
+        width: 34px;
+        height: 34px;
+        font-size: 1.15rem;
+    }
+
+    .site-header__nav {
+        gap: 2px;
+    }
+
+    .site-header__link,
+    .site-header__action {
+        min-height: 40px;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .site-header__inner {
+        width: min(100% - 20px, 1180px);
+    }
+
+    .site-header__link,
+    .site-header__action {
+        padding-inline: 8px;
+        font-size: 0.78rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header__link,
+    .site-header__action {
+        transition: none;
+    }
+}

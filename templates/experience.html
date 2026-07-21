@@ -2,79 +2,61 @@
 <html lang="fr">
 
 <head>
-    <!-- Métadonnées et styles partagés des formulaires du profil. -->
     <meta charset="UTF-8">
-    <title>Expérience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if exp %}Modify an experience{% else %}Add an experience{% endif %}</title>
     <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/forms.css">
 </head>
 
-<body>
+<body class="form-page">
+    {% set header_variant = "private" %}
+    {% set header_active = "profile" %}
+    {% include "_site_header.html" %}
+    {% set values = form_values or {} %}
 
-    <!-- Carte principale utilisée aussi bien pour la création que pour l'édition. -->
-    <div class="container">
+    <main class="form-shell">
+        <div class="form-heading">
+            <p class="form-eyebrow">Professional journey</p>
+            <h1>{% if exp %}Modify an experience{% else %}Add an experience{% endif %}</h1>
+            <p>Describe your role, the organisation, and the value you contributed.</p>
+        </div>
 
-        {# Priorise les valeurs soumises afin de ne pas vider le formulaire après une erreur. #}
-        {% set values = form_values or {} %}
-
-        {# La présence de `exp` détermine le mode édition ; son absence active le mode création. #}
-        <h1>
-            {% if exp %}
-            Modify an experience
-            {% else %}
-            Add an experience
-            {% endif %}
-        </h1>
-
-        {# État d'erreur de validation communiqué de manière accessible. #}
-        {% if error %}
-        <p class="form-error" role="alert">{{ error }}</p>
-        {% endif %}
-
-        <!-- L'action cible la route d'édition avec l'identifiant ou la route de création. -->
-        <form action="{% if exp %}/profil/experience/edit/{{ exp.id }}{% else %}/profil/experience{% endif %}"
-            method="post">
-            {# Protection anti-CSRF obligatoire pour toute mutation du profil. #}
+        <form class="content-form" action="{% if exp %}/profil/experience/edit/{{ exp.id }}{% else %}/profil/experience{% endif %}" method="post">
             <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
 
-            <!-- Informations principales de l'expérience. -->
-            <label>Titre :</label>
-            <input type="text" name="title" value="{{ values.get('title', exp.title if exp else '') }}"
-                maxlength="150" required>
+            <div class="form-grid form-grid--two">
+                <div class="field-group">
+                    <label for="title">Title</label>
+                    <input id="title" type="text" name="title" value="{{ values.get('title', exp.title if exp else '') }}" maxlength="150" required>
+                </div>
+                <div class="field-group">
+                    <label for="company">Company</label>
+                    <input id="company" type="text" name="company" value="{{ values.get('company', exp.company if exp else '') }}" maxlength="150" required>
+                </div>
+                <div class="field-group">
+                    <label for="date_start">Start date</label>
+                    <input id="date_start" type="date" name="date_start" value="{{ values.get('date_start', exp.date_start.strftime('%Y-%m-%d') if exp else '') }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="date_end">End date</label>
+                    <input id="date_end" type="date" name="date_end" value="{{ values.get('date_end', exp.date_end.strftime('%Y-%m-%d') if exp else '') }}" required>
+                </div>
+            </div>
 
-            <!-- Période de l'expérience, formatée en ISO pour les champs HTML date. -->
-            <label>Start date :</label>
-            <input type="date" name="date_start"
-                value="{{ values.get('date_start', exp.date_start.strftime('%Y-%m-%d') if exp else '') }}" required>
+            <div class="field-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="6" maxlength="3000" required>{{ values.get('description', exp.description if exp else '') }}</textarea>
+            </div>
 
-            <label>End date :</label>
-            <input type="date" name="date_end"
-                value="{{ values.get('date_end', exp.date_end.strftime('%Y-%m-%d') if exp else '') }}" required>
-
-            <!-- Description détaillée et organisation associée. -->
-            <label>Description :</label>
-            <textarea name="description" rows="3" maxlength="3000"
-                required>{{ values.get('description', exp.description if exp else '') }}</textarea>
-
-            <label>Entreprise :</label>
-            <input type="text" name="company" value="{{ values.get('company', exp.company if exp else '') }}"
-                maxlength="150" required>
-
-            {# Libellé du bouton adapté au mode courant du formulaire. #}
-            <button type="submit">
-                {% if exp %}Update{% else %}Add{% endif %}
-            </button>
-
+            <div class="form-actions">
+                <a class="button button--secondary" href="/profil#experience">Cancel</a>
+                <button class="button" type="submit">{% if exp %}Update{% else %}Add experience{% endif %}</button>
+            </div>
         </form>
-
-        <br>
-
-        <!-- Navigation de retour vers le tableau de bord privé. -->
-        <a href="/profil">
-            <button type="button">Back</button>
-        </a>
-
-    </div>
-
+    </main>
 </body>
 
 </html>

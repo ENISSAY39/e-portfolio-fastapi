@@ -2,74 +2,161 @@
 <html lang="fr">
 
 <head>
-    <!-- Métadonnées et combinaison des styles globaux et spécifiques au profil public. -->
     <meta charset="UTF-8">
-    <title>Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ user.first_name }} {{ user.name }} · Portfolio</title>
     <link rel="stylesheet" href="/static/base.css">
     <link rel="stylesheet" href="/static/public_profile.css">
+    <link rel="stylesheet" href="/static/header.css">
+    <link rel="stylesheet" href="/static/portfolio.css">
 </head>
 
-<body>
-    <!-- En-tête public proposant un retour à l'annuaire des portfolios. -->
-    <div class="header">
-        <h1>Welcome to Public e-Portfolios</h1>
-        <!-- Action de navigation sans soumission de formulaire. -->
-        <div class="header-buttons">
-            <a href="/">
-                <button type="button">Home</button>
-            </a>
-        </div>
-    </div>
-    <!-- Carte contenant l'identité, les coordonnées et le parcours public. -->
-    <div class="profile-container">
-        <!-- Identité et coordonnées issues de l'utilisateur sélectionné. -->
-        <div class="profile-header">
-            <h1>{{ user.first_name }} {{ user.name }}</h1>
-            <div class="profile-contact">
-                <div><strong>Email :</strong> {{ user.mail }}</div>
-                <div><strong>Téléphone :</strong> {{ user.phone }}</div>
+<body class="portfolio-page portfolio-page--public">
+    {% set header_variant = "public" %}
+    {% include "_site_header.html" %}
+
+    <main class="portfolio-shell">
+        <section class="profile-hero profile-hero--public" aria-labelledby="public-profile-title">
+            <div class="profile-hero__main">
+                <div class="profile-avatar" aria-hidden="true">
+                    {{ user.first_name[:1] }}{{ user.name[:1] }}
+                </div>
+                <div class="profile-hero__copy">
+                    <p class="eyebrow">Portfolio</p>
+                    <h1 id="public-profile-title">{{ user.first_name }} {{ user.name }}</h1>
+                    {% if user.bio %}
+                    <p class="profile-bio">{{ user.bio }}</p>
+                    {% else %}
+                    <p class="profile-bio profile-bio--empty">This portfolio owner has not added a biography yet.</p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        <!-- Section des expériences professionnelles. -->
-        <div class="profile-section">
-            <h2>Experiences</h2>
-            <ul class="profile-list">
-                {# Rend chaque expérience ; le bloc `else` couvre explicitement la collection vide. #}
-                {% for exp in experiences %}
-                <li>
-                    <!-- Intitulé, entreprise, période puis description de l'expérience. -->
-                    <div><strong>{{ exp.title }}</strong> - {{ exp.company }}</div>
-                    <small>{{ exp.date_start }} → {{ exp.date_end }}</small>
-                    <div>{{ exp.description }}</div>
-                </li>
-                {# État vide affiché lorsque l'utilisateur n'a encore publié aucune expérience. #}
-                {% else %}
-                <li>No experiences.</li>
+            <div class="public-contact" aria-label="Contact details">
+                <a href="mailto:{{ user.mail }}"><span>Email</span>{{ user.mail }}</a>
+                <a href="tel:{{ user.phone }}"><span>Téléphone</span>{{ user.phone }}</a>
+            </div>
+
+            {% if links %}
+            <div class="social-links" aria-label="External profiles">
+                {% for link in links %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }} <span aria-hidden="true">↗</span></a>
                 {% endfor %}
-            </ul>
-        </div>
+            </div>
+            {% endif %}
+        </section>
 
-        <!-- Section du parcours scolaire et universitaire. -->
-        <div class="profile-section">
-            <h2>Educations</h2>
-            <ul class="profile-list">
-                {# Rend chaque formation ; le bloc `else` couvre explicitement la collection vide. #}
-                {% for edu in educations %}
-                <li>
-                    <!-- Établissement, spécialité, période puis description de la formation. -->
-                    <div><strong>{{ edu.school_name }}</strong> - {{ edu.major }}</div>
-                    <small>{{ edu.date_start }} → {{ edu.date_end }}</small>
-                    <div>{{ edu.description }}</div>
-                </li>
-                {# État vide affiché lorsque l'utilisateur n'a encore publié aucune formation. #}
+        <div class="portfolio-layout">
+            <section class="content-section content-section--wide" id="projects" aria-labelledby="public-projects-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Selected work</p>
+                        <h2 id="public-projects-title">Projects</h2>
+                    </div>
+                </div>
+                {% if projects %}
+                <div class="project-grid">
+                    {% for project in projects %}
+                    <article class="project-card">
+                        <div class="project-card__body">
+                            <h3>{{ project.title }}</h3>
+                            {% if project.technologies %}<p class="tag-line">{{ project.technologies }}</p>{% endif %}
+                            <p>{{ project.description }}</p>
+                        </div>
+                        {% if project.project_url or project.repository_url %}
+                        <div class="project-card__links">
+                            {% if project.project_url %}<a href="{{ project.project_url }}" target="_blank" rel="noopener noreferrer">Live project</a>{% endif %}
+                            {% if project.repository_url %}<a href="{{ project.repository_url }}" target="_blank" rel="noopener noreferrer">Repository</a>{% endif %}
+                        </div>
+                        {% endif %}
+                    </article>
+                    {% endfor %}
+                </div>
                 {% else %}
-                <li>No educations.</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
+                <div class="empty-state"><strong>No projects.</strong></div>
+                {% endif %}
+            </section>
 
+            <section class="content-section" id="skills" aria-labelledby="public-skills-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Expertise</p>
+                        <h2 id="public-skills-title">Skills</h2>
+                    </div>
+                </div>
+                {% if skills %}
+                <ul class="skill-list">
+                    {% for skill in skills %}
+                    <li class="skill-item">
+                        <div class="skill-item__heading"><strong>{{ skill.name }}</strong><span>{{ skill.level }}/5</span></div>
+                        <div class="skill-meter skill-meter--{{ skill.level }}" aria-label="Level {{ skill.level }} out of 5">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state"><strong>No skills.</strong></div>
+                {% endif %}
+            </section>
+
+            <section class="content-section" aria-labelledby="public-links-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Around the web</p>
+                        <h2 id="public-links-title">Links</h2>
+                    </div>
+                </div>
+                {% if links %}
+                <ul class="link-list">
+                    {% for link in links %}
+                    <li><a class="external-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer"><span>{{ link.label }}</span><span aria-hidden="true">↗</span></a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state"><strong>No links.</strong></div>
+                {% endif %}
+            </section>
+
+            <section class="content-section content-section--wide" aria-labelledby="public-experience-title">
+                <div class="section-heading"><div><p class="section-kicker">Professional journey</p><h2 id="public-experience-title">Experiences</h2></div></div>
+                {% if experiences %}
+                <ol class="timeline">
+                    {% for exp in experiences %}
+                    <li class="timeline__item">
+                        <div class="timeline__marker" aria-hidden="true"></div>
+                        <article>
+                            <div class="timeline__heading"><div><h3>{{ exp.title }}</h3><p>{{ exp.company }}</p></div><time>{{ exp.date_start.strftime('%b %Y') }} – {{ exp.date_end.strftime('%b %Y') }}</time></div>
+                            <p>{{ exp.description }}</p>
+                        </article>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <div class="empty-state"><strong>No experiences.</strong></div>
+                {% endif %}
+            </section>
+
+            <section class="content-section content-section--wide" aria-labelledby="public-education-title">
+                <div class="section-heading"><div><p class="section-kicker">Learning journey</p><h2 id="public-education-title">Educations</h2></div></div>
+                {% if educations %}
+                <ol class="timeline">
+                    {% for edu in educations %}
+                    <li class="timeline__item">
+                        <div class="timeline__marker" aria-hidden="true"></div>
+                        <article>
+                            <div class="timeline__heading"><div><h3>{{ edu.school_name }}</h3><p>{{ edu.major }}</p></div><time>{{ edu.date_start.strftime('%b %Y') }} – {{ edu.date_end.strftime('%b %Y') }}</time></div>
+                            <p>{{ edu.description }}</p>
+                        </article>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <div class="empty-state"><strong>No educations.</strong></div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
 </body>
 
 </html>
