@@ -5,11 +5,14 @@ from datetime import date, datetime, timedelta
 import pytest
 
 from core.validation import (
+    clean_optional_text,
     clean_text,
     normalize_email,
     normalize_phone,
     parse_birth_date,
     parse_date_range,
+    parse_skill_level,
+    validate_http_url,
     validate_password,
 )
 
@@ -32,6 +35,88 @@ def test_clean_text_rejects_invalid_values(
 ) -> None:
     with pytest.raises(ValueError) as exc_info:
         clean_text(value, "Name", max_length)
+
+    assert str(exc_info.value) == expected_message
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("   ", None),
+        ("  Open-source contributor  ", "Open-source contributor"),
+    ],
+)
+def test_clean_optional_text_normalizes_blank_and_present_values(
+    value: str,
+    expected: str | None,
+) -> None:
+    assert clean_optional_text(value, "Biography", 100) == expected
+
+
+def test_clean_optional_text_rejects_an_overlong_value() -> None:
+    with pytest.raises(
+        ValueError,
+        match="^Biography must contain at most 10 characters\\.$",
+    ):
+        clean_optional_text("x" * 11, "Biography", 10)
+
+
+@pytest.mark.parametrize("value", ["1", "3", "5"])
+def test_parse_skill_level_accepts_the_five_point_range(value: str) -> None:
+    assert parse_skill_level(value) == int(value)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected_message"),
+    [
+        ("advanced", "Skill level must be a whole number from 1 to 5."),
+        ("0", "Skill level must be between 1 and 5."),
+        ("6", "Skill level must be between 1 and 5."),
+    ],
+)
+def test_parse_skill_level_rejects_invalid_values(
+    value: str,
+    expected_message: str,
+) -> None:
+    with pytest.raises(ValueError) as exc_info:
+        parse_skill_level(value)
+
+    assert str(exc_info.value) == expected_message
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "https://portfolio.example/projects/1?source=test#demo",
+        "http://localhost:8000/demo",
+    ],
+)
+def test_validate_http_url_accepts_absolute_http_destinations(value: str) -> None:
+    assert validate_http_url(f"  {value}  ", "Project URL") == value
+
+
+def test_validate_http_url_normalizes_an_optional_blank_value() -> None:
+    assert validate_http_url("   ", "Project URL") is None
+
+
+@pytest.mark.parametrize(
+    ("value", "expected_message"),
+    [
+        ("", "URL is required."),
+        ("javascript:alert(1)", "URL must be a valid HTTP or HTTPS URL."),
+        ("https://", "URL must be a valid HTTP or HTTPS URL."),
+        ("https://example.com/a path", "URL must be a valid HTTP or HTTPS URL."),
+        ("https://example.com:invalid", "URL must be a valid HTTP or HTTPS URL."),
+        ("https://[invalid", "URL must be a valid HTTP or HTTPS URL."),
+        ("https://example.com/" + "x" * 2030, "URL must contain at most 2048 characters."),
+    ],
+)
+def test_validate_http_url_rejects_missing_or_unsafe_destinations(
+    value: str,
+    expected_message: str,
+) -> None:
+    with pytest.raises(ValueError) as exc_info:
+        validate_http_url(value, "URL", required=True)
 
     assert str(exc_info.value) == expected_message
 
